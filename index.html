@@ -30,14 +30,15 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    display: flex;
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.6;
-  }
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden; /* ← NUEVO */
+}
 
   /* SIDEBAR */
   #sidebar {
@@ -53,6 +54,9 @@
     transition: transform 0.3s ease;
   }
 
+  body.sidebar-hidden #sidebar {
+    transform: translateX(-100%); /* Desplaza la barra completamente a la izquierda */
+  }
   .sidebar-logo {
     padding: 24px 20px 18px;
     border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -116,12 +120,18 @@
 
   /* MAIN */
   #main {
-    margin-left: var(--sidebar-w);
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease; /* ← NUEVO: Hace que el ensanchamiento sea suave */
+}
+
+/* NUEVO: Cuando la barra se oculta, el contenido principal se pega al borde izquierdo */
+body.sidebar-hidden #main {
+  margin-left: 0;
+}
 
   #topbar {
     height: var(--header-h);
@@ -611,7 +621,7 @@
   <div class="sidebar-section">
     <div class="sidebar-section-label">General</div>
     <div class="nav-item active" onclick="showSection('overview')">
-      <span class="nav-icon">🏠</span> Resumen Ejecutivo
+      <span class="nav-icon">🏠</span> Home
     </div>
     <div class="nav-item" onclick="showSection('scope')">
       <span class="nav-icon">🎯</span> Alcance del Proyecto
@@ -670,7 +680,8 @@
 <!-- MAIN CONTENT -->
 <div id="main">
   <div id="topbar">
-    <div class="topbar-title" id="topbar-title">Resumen Ejecutivo</div>
+    <button id="toggleSidebar" style="background: var(--surface2); border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500; color: var(--text); margin-right: 10px;">📁 Ocultar Menú</button>
+    <div class="topbar-title" id="topbar-title">Home</div>
     <div class="topbar-crumb" id="topbar-crumb" style="margin-left:auto; font-size:11px; color:var(--text-muted);">BioNest · NestBiotech · 2026–2027</div>
   </div>
 
@@ -2094,7 +2105,7 @@ function showSection(id) {
   event.currentTarget.classList.add('active');
 
   const titles = {
-    overview: 'Resumen Ejecutivo',
+    overview: 'Home',
     scope: 'Alcance del Proyecto',
     stakeholders: 'Stakeholders',
     team: 'Equipo del Proyecto',
@@ -2324,6 +2335,13 @@ function buildRaci() {
 
 buildPert();
 buildRaci();
+<script>
+  // Script interactivo para alternar la barra lateral de BioNest
+  document.getElementById('toggleSidebar').addEventListener('click', function() {
+    const isHidden = document.body.classList.toggle('sidebar-hidden');
+    this.innerText = isHidden ? "📁 Mostrar Menú" : "📁 Ocultar Menú";
+  });
 </script>
+
 </body>
 </html>
