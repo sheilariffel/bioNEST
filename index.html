@@ -120,19 +120,23 @@
 
   /* MAIN */
   #main {
-  margin-left: var(--sidebar-w);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  transition: margin-left 0.3s ease; /* ← NUEVO: Hace que el ensanchamiento sea suave */
-}
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease; /* Asegura el movimiento suave */
+  }
 
-/* NUEVO: Cuando la barra se oculta, el contenido principal se pega al borde izquierdo */
-body.sidebar-hidden #main {
-  margin-left: 0;
-}
+  /* NUEVO: Hace que el contenido se estire cuando la barra se oculta */
+  body.sidebar-hidden #main {
+    margin-left: 0;
+  }
 
+  /* NUEVO: Oculta la barra lateral empujándola a la izquierda */
+  body.sidebar-hidden #sidebar {
+    transform: translateX(-100%);
+  }
   #topbar {
     height: var(--header-h);
     background: var(--surface);
@@ -2336,7 +2340,36 @@ function buildRaci() {
 buildPert();
 buildRaci();
 <script>
-  // Script interactivo para alternar la barra lateral de BioNest
+  // 1. LÓGICA ORIGINAL: Cambiar entre pestañas (Corregida)
+  function showSection(sectionId, title) {
+    // Ocultar todas las secciones
+    document.querySelectorAll('.section').forEach(sec => {
+      sec.classList.remove('active');
+    });
+    // Mostrar la sección seleccionada
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+      targetSection.classList.add('active');
+    }
+    
+    // Cambiar el título de la barra superior
+    document.getElementById('topbar-title').innerText = title;
+    
+    // Cambiar el estado activo en el menú lateral
+    document.querySelectorAll('.sidebar-menu a').forEach(link => {
+      link.classList.remove('active');
+    });
+    
+    // Marcar como activo el elemento clickeado
+    const activeLink = Array.from(document.querySelectorAll('.sidebar-menu a')).find(link => 
+      link.getAttribute('onclick') && link.getAttribute('onclick').includes(sectionId)
+    );
+    if (activeLink) {
+      activeLink.classList.add('active');
+    }
+  }
+
+  // 2. NUEVA LÓGICA: Ocultar / Mostrar la Barra Lateral
   document.getElementById('toggleSidebar').addEventListener('click', function() {
     const isHidden = document.body.classList.toggle('sidebar-hidden');
     this.innerText = isHidden ? "📁 Mostrar Menú" : "📁 Ocultar Menú";
