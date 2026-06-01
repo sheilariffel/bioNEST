@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioNest — Panel de Gestión del Proyecto</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3ef;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --text-muted: #6b6760;
+    --accent: #2d6a4f;
+    --accent-light: #d8f3e3;
+    --accent2: #b5451b;
+    --accent2-light: #fce8e1;
+    --accent3: #1d4e89;
+    --accent3-light: #dbeafe;
+    --accent4: #7b3f00;
+    --accent4-light: #fef3e2;
+    --yellow: #d4a017;
+    --yellow-light: #fef9e7;
+    --sidebar-w: 260px;
+    --header-h: 56px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--text);
+    color: #f5f3ef;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .sidebar-logo .logo-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #f5f3ef;
+    letter-spacing: -0.5px;
+  }
+  .sidebar-logo .logo-sub {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(245,243,239,0.45);
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .sidebar-section {
+    padding: 14px 12px 6px;
+  }
+  .sidebar-section-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(245,243,239,0.35);
+    font-family: 'DM Mono', monospace;
+    padding: 0 8px;
+    margin-bottom: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: rgba(245,243,239,0.7);
+    font-size: 13px;
+    font-weight: 400;
+    transition: all 0.15s ease;
+    user-select: none;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: #f5f3ef; }
+  .nav-item.active { background: var(--accent); color: #f5f3ef; font-weight: 500; }
+  .nav-item .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-item .nav-badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.12);
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    padding: 1px 6px;
+    border-radius: 20px;
+    color: rgba(245,243,239,0.6);
+  }
+  .nav-item.active .nav-badge { background: rgba(255,255,255,0.2); color: #fff; }
+
+  /* MAIN */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  #topbar {
+    height: var(--header-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .topbar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .topbar-crumb {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .topbar-sep { color: var(--border); }
+
+  #content {
+    padding: 28px;
+    flex: 1;
+  }
+
+  /* SECTIONS */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .card-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  /* KPI CARDS */
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+  .kpi-value { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text); }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); }
+  .kpi.green { border-left: 3px solid var(--accent); }
+  .kpi.red { border-left: 3px solid var(--accent2); }
+  .kpi.blue { border-left: 3px solid var(--accent3); }
+  .kpi.orange { border-left: 3px solid var(--yellow); }
+
+  /* TAGS */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+  }
+  .tag-green { background: var(--accent-light); color: var(--accent); }
+  .tag-red { background: var(--accent2-light); color: var(--accent2); }
+  .tag-blue { background: var(--accent3-light); color: var(--accent3); }
+  .tag-orange { background: var(--yellow-light); color: var(--yellow); }
+  .tag-gray { background: var(--surface2); color: var(--text-muted); }
+  .tag-brown { background: var(--accent4-light); color: var(--accent4); }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+  .mono { font-family: 'DM Mono', monospace; font-size: 12px; }
+
+  /* ACCORDION */
+  .accordion { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    cursor: pointer;
+    background: var(--surface);
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .accordion-header:hover { background: var(--surface2); }
+  .accordion-header.open { background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .accordion-title { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+  .accordion-arrow { font-size: 10px; color: var(--text-muted); transition: transform 0.2s; }
+  .accordion-arrow.open { transform: rotate(180deg); }
+  .accordion-body { display: none; padding: 0; background: var(--surface); }
+  .accordion-body.open { display: block; }
+  .accordion-body-inner { padding: 18px; }
+
+  /* PHASE TIMELINE */
+  .timeline { position: relative; padding-left: 30px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .timeline-item { position: relative; margin-bottom: 24px; }
+  .timeline-dot {
+    position: absolute;
+    left: -26px; top: 3px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--surface);
+  }
+  .timeline-dot.orange { background: var(--yellow); }
+  .timeline-dot.blue { background: var(--accent3); }
+  .timeline-dot.red { background: var(--accent2); }
+  .timeline-item-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .timeline-item-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+  .timeline-item-body { font-size: 13px; color: var(--text); }
+
+  /* PROGRESS BAR */
+  .prog-bar { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+  .prog-fill { height: 100%; border-radius: 3px; background: var(--accent); }
+
+  /* SECTION HEADING */
+  .section-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  /* RISK MATRIX */
+  .risk-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    background: var(--surface);
+  }
+  .risk-level {
+    width: 52px;
+    text-align: center;
+    padding: 3px 0;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .risk-high { background: #fce8e1; color: #b5451b; }
+  .risk-medium { background: #fef9e7; color: #d4a017; }
+  .risk-low { background: #d8f3e3; color: #2d6a4f; }
+
+  /* STAKEHOLDER */
+  .stakeholder-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .stakeholder-name { font-weight: 700; font-size: 15px; }
+  .stakeholder-role { font-size: 12px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+  .stakeholder-interest { font-size: 12px; color: var(--text); }
+
+  /* TEAM MEMBER */
+  .team-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    background: var(--surface);
+  }
+  .team-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+  .team-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .team-role { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+  .team-resp { font-size: 12px; color: var(--text); line-height: 1.5; }
+
+  /* RACI TABLE */
+  .raci-wrap { overflow-x: auto; }
+  .raci-table { border-collapse: collapse; font-size: 11px; min-width: 1200px; }
+  .raci-table th { 
+    background: var(--surface2); 
+    padding: 8px 6px; 
+    font-size: 10px; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+  }
+  .raci-table .task-id { 
+    font-family: 'DM Mono', monospace; 
+    font-size: 10px; 
+    color: var(--text-muted); 
+    background: var(--bg);
+    white-space: nowrap;
+  }
+  .raci-table td { 
+    padding: 7px 6px; 
+    border: 1px solid var(--border); 
+    text-align: center;
+    vertical-align: middle;
+  }
+  .raci-table tr:hover td { background: #fafaf8; }
+  .raci-table td.task-name { text-align: left; font-size: 12px; white-space: nowrap; padding: 7px 12px; }
+  .raci-table .phase-row td { background: var(--text); color: #f5f3ef; font-weight: 700; font-size: 11px; text-align: left; padding: 6px 12px; }
+  .raci-r { color: var(--accent); font-weight: 800; font-size: 13px; }
+  .raci-a { color: var(--accent2); font-weight: 800; font-size: 13px; }
+  .raci-c { color: var(--accent3); font-weight: 700; font-size: 13px; }
+  .raci-i { color: var(--text-muted); font-size: 12px; }
+
+  /* WBS */
+  .wbs-phase {
+    margin-bottom: 12px;
+  }
+  .wbs-phase-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--text);
+    color: #f5f3ef;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    user-select: none;
+  }
+  .wbs-phase-id { font-family: 'DM Mono', monospace; font-size: 12px; opacity: 0.6; }
+  .wbs-phase-name { font-weight: 600; font-size: 15px; }
+  .wbs-phase-arrow { margin-left: auto; font-size: 10px; opacity: 0.6; transition: transform 0.2s; }
+  .wbs-phase-arrow.open { transform: rotate(180deg); }
+  .wbs-phase-body { display: none; border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; overflow: hidden; }
+  .wbs-phase-body.open { display: block; }
+  .wbs-subgroup { background: var(--surface2); padding: 10px 18px; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; }
+  .wbs-task {
+    display: grid;
+    grid-template-columns: 80px 1fr 160px 1fr;
+    gap: 0;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    align-items: start;
+    font-size: 12px;
+  }
+  .wbs-task:last-child { border-bottom: none; }
+  .wbs-task:hover { background: var(--bg); }
+  .wbs-task-id { font-family: 'DM Mono', monospace; color: var(--text-muted); font-size: 11px; }
+  .wbs-task-name { font-weight: 500; color: var(--text); padding-right: 12px; }
+  .wbs-task-deliverable { font-style: italic; color: var(--text-muted); font-size: 11px; padding-right: 12px; }
+  .wbs-task-criteria { color: var(--text); font-size: 11px; }
+  .wbs-task-header {
+    display: grid;
+    grid-template-columns: 80px 1fr 160px 1fr;
+    gap: 0;
+    padding: 8px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-weight: 600;
+  }
+
+  /* ROADMAP */
+  .roadmap-phase {
+    display: flex;
+    gap: 0;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .roadmap-phase-bar {
+    width: 6px;
+    flex-shrink: 0;
+  }
+  .roadmap-phase-content { padding: 16px 20px; background: var(--surface); flex: 1; }
+  .roadmap-phase-title { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+  .roadmap-phase-dates { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+  .roadmap-tasks { display: flex; flex-direction: column; gap: 6px; }
+  .roadmap-task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+  }
+  .roadmap-task-name { font-weight: 500; }
+  .roadmap-task-hours { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  /* PERT TABLE */
+  .pert-value { font-family: 'DM Mono', monospace; font-size: 12px; text-align: right; }
+  .pert-high { color: var(--accent2); font-weight: 600; }
+  .pert-med { color: var(--yellow); font-weight: 600; }
+
+  /* STAGE GATES */
+  .gate-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .gate-badge {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+  }
+  .gate-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .gate-criteria { font-size: 12px; color: var(--text); }
+
+  /* KANBAN COLUMNS */
+  .kanban-board { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; }
+  .kanban-col { min-width: 200px; background: var(--surface2); border-radius: 10px; padding: 12px; flex: 1; }
+  .kanban-col-title {
+    font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted); margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'DM Mono', monospace;
+  }
+  .kanban-wip { background: var(--border); color: var(--text-muted); font-size: 10px; padding: 1px 7px; border-radius: 20px; }
+  .kanban-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 8px; font-size: 12px;
+  }
+  .kanban-card-id { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+  .kanban-card-name { font-weight: 500; line-height: 1.4; }
+  .kanban-card-owner { font-size: 10px; color: var(--text-muted); margin-top: 5px; }
+
+  /* METRICS */
+  .metric-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .metric-title { font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+  .metric-body { font-size: 12px; color: var(--text); line-height: 1.7; }
+
+  /* INFO BOXES */
+  .info-box {
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    border-left: 4px solid;
+    line-height: 1.6;
+  }
+  .info-green { background: var(--accent-light); border-color: var(--accent); color: #1a4a35; }
+  .info-blue { background: var(--accent3-light); border-color: var(--accent3); color: #1a3a60; }
+  .info-orange { background: var(--yellow-light); border-color: var(--yellow); color: #6b4a00; }
+  .info-red { background: var(--accent2-light); border-color: var(--accent2); color: #6b2010; }
+
+  /* EXCLUSIONS */
+  .excl-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    align-items: flex-start;
+  }
+  .excl-item:last-child { border-bottom: none; }
+  .excl-icon { color: var(--accent2); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .small-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+  .body-text { font-size: 13px; color: var(--text); line-height: 1.75; }
+
+  ul.styled { padding-left: 18px; }
+  ul.styled li { margin-bottom: 5px; font-size: 13px; color: var(--text); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-name">BioNest</div>
+    <div class="logo-sub">Sistema de Ectogénesis</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">General</div>
+    <div class="nav-item active" onclick="showSection('overview')">
+      <span class="nav-icon">🏠</span> Resumen Ejecutivo
+    </div>
+    <div class="nav-item" onclick="showSection('scope')">
+      <span class="nav-icon">🎯</span> Alcance del Proyecto
+    </div>
+    <div class="nav-item" onclick="showSection('stakeholders')">
+      <span class="nav-icon">👥</span> Stakeholders
+    </div>
+    <div class="nav-item" onclick="showSection('team')">
+      <span class="nav-icon">🧬</span> Equipo
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Planificación</div>
+    <div class="nav-item" onclick="showSection('lifecycle')">
+      <span class="nav-icon">🔄</span> Ciclo de Vida
+    </div>
+    <div class="nav-item" onclick="showSection('wbs')">
+      <span class="nav-icon">🌳</span> WBS Completa <span class="nav-badge">44</span>
+    </div>
+    <div class="nav-item" onclick="showSection('roadmap')">
+      <span class="nav-icon">🗓</span> Roadmap
+    </div>
+    <div class="nav-item" onclick="showSection('pert')">
+      <span class="nav-icon">📊</span> Estimaciones PERT
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Ejecución</div>
+    <div class="nav-item" onclick="showSection('kanban')">
+      <span class="nav-icon">📋</span> Kanban & WIP
+    </div>
+    <div class="nav-item" onclick="showSection('gates')">
+      <span class="nav-icon">🚪</span> Stage-Gates
+    </div>
+    <div class="nav-item" onclick="showSection('raci')">
+      <span class="nav-icon">📌</span> Matriz RACI
+    </div>
+    <div class="nav-item" onclick="showSection('metrics')">
+      <span class="nav-icon">📈</span> Métricas Kanban
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Control</div>
+    <div class="nav-item" onclick="showSection('risks')">
+      <span class="nav-icon">⚠️</span> Gestión de Riesgos
+    </div>
+    <div class="nav-item" onclick="showSection('bibliography')">
+      <span class="nav-icon">📚</span> Bibliografía & Contexto
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+  <div id="topbar">
+    <div class="topbar-title" id="topbar-title">Resumen Ejecutivo</div>
+    <div class="topbar-crumb" id="topbar-crumb" style="margin-left:auto; font-size:11px; color:var(--text-muted);">BioNest · NestBiotech · 2026–2027</div>
+  </div>
+
+  <div id="content">
+
+    <!-- ========== OVERVIEW ========== -->
+    <div id="sec-overview" class="section active">
+      <div class="section-heading">BioNest — Sistema de Ectogénesis Artificial</div>
+      <div class="section-desc">Sistema de Incubación Gestacional Extrauterina para Conservación de Especies · NestBiotech · Inicio: 3 Agosto 2026 · Fin: 28 Mayo 2027</div>
+
+      <div class="grid-4" style="margin-bottom:20px">
+        <div class="kpi green">
+          <div class="kpi-label">Duración Total</div>
+          <div class="kpi-value">10</div>
+          <div class="kpi-sub">meses (3 ago 2026 – 28 may 2027)</div>
+        </div>
+        <div class="kpi blue">
+          <div class="kpi-label">Esfuerzo Total</div>
+          <div class="kpi-value">1747,9</div>
+          <div class="kpi-sub">horas/persona estimadas (PERT)</div>
+        </div>
+        <div class="kpi orange">
+          <div class="kpi-label">Tareas en WBS</div>
+          <div class="kpi-value">44</div>
+          <div class="kpi-sub">distribuidas en 4 fases</div>
+        </div>
+        <div class="kpi red">
+          <div class="kpi-label">Stage Gates</div>
+          <div class="kpi-value">S1–S6</div>
+          <div class="kpi-sub">+ Gate de habilitación Fase 1</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Descripción del Caso</div>
+          <div class="card-subtitle">CONTEXTO Y MOTIVACIÓN</div>
+          <div class="body-text">
+            El proyecto surge ante la necesidad de desarrollar soluciones tecnológicas que permitan mejorar las estrategias actuales de conservación de especies animales en peligro de extinción, frente a las limitaciones de los métodos reproductivos tradicionales.<br><br>
+            Las técnicas disponibles — reproducción asistida o gestación en vientres sustitutos — presentan restricciones significativas biológicas, logísticas y éticas, especialmente en especies con baja tasa reproductiva o en riesgo crítico. No existen sistemas capaces de replicar integralmente las condiciones fisiológicas del entorno uterino.<br><br>
+            <strong>Especie de referencia:</strong> Rinoceronte blanco del norte (<em>Ceratotherium simum cottoni</em>), dada la criticidad de sus condiciones reproductivas actuales. La validación inicial se realizará en <strong>lagomorfos (<em>Oryctolagus cuniculus</em>)</strong> por su ciclo de gestación rápido (~31 días), documentación bibliográfica disponible, viabilidad ética y costo-eficiencia.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Propuesta de Valor</div>
+          <div class="card-subtitle">DIFERENCIADORES CLAVE</div>
+          <div class="body-text">
+            Solución tecnológica <strong>modular y escalable</strong> que simula de manera controlada el entorno intrauterino.<br><br>
+            <strong>Prototipo funcional</strong> de incubadora gestacional extrauterina de entorno líquido con control automatizado de variables fisiológicas y arquitectura adaptable, que replica fielmente las condiciones fisiológicas maternas permitiendo desarrollo embrionario más estable y menos invasivo.<br><br>
+            <strong>Escalabilidad por diseño:</strong> el sistema calibrado en lagomorfos es adaptable a especies de mayor tamaño mediante ajuste paramétrico (volumen del receptáculo, flujos de perfusión, rangos termometabólicos) sin requerir rediseño estructural.<br><br>
+            <strong>Modelo de negocio:</strong> licenciamiento tecnológico y provisión de insumos específicos a organizaciones de conservación.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Objetivo General</div>
+        <div class="card-subtitle">OBJETIVO CENTRAL DEL PROYECTO</div>
+        <div class="body-text">Desarrollar un prototipo funcional modular de sistema de incubación gestacional extrauterina, validado inicialmente con parámetros fisiológicos de lagomorfos, que permita mediante ajuste paramétrico su adaptación futura a distintas especies mamíferas, incluyendo aquellas en peligro de extinción.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Objetivos Específicos</div>
+        <div class="card-subtitle">10 OBJETIVOS TÉCNICOS</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Objetivo Específico</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">OE-01</td><td>Diseñar una arquitectura modular del sistema que permita escalabilidad paramétrica (volumen del receptáculo, flujos de perfusión, rangos de temperatura) sin requerir rediseño estructural.</td></tr>
+              <tr><td class="mono">OE-02</td><td>Diseñar y bioimprimir un receptáculo uterino a escala utilizando biomateriales o hidrogeles capaces de soportar fluidos a presión.</td></tr>
+              <tr><td class="mono">OE-03</td><td>Diseñar e implementar un circuito cerrado de circulación de fluidos impulsado por una bomba automatizada (simulación de corazón artificial).</td></tr>
+              <tr><td class="mono">OE-04</td><td>Integrar un módulo de filtrado/diálisis para la remoción de desechos simulados del circuito.</td></tr>
+              <tr><td class="mono">OE-05</td><td>Desarrollar y acoplar un mecanismo de hematosis artificial capaz de oxigenar y descarboxilar el fluido circulante.</td></tr>
+              <tr><td class="mono">OE-06</td><td>Implementar un sistema de inyección controlada que permita regular el ingreso de fluidos simulados (nutrientes y hormonas) por vía venosa.</td></tr>
+              <tr><td class="mono">OE-07</td><td>Incorporar una matriz de sensores integrados para el monitoreo continuo de variables críticas (presión, temperatura, pH y volumen) dentro del receptáculo.</td></tr>
+              <tr><td class="mono">OE-08</td><td>Desarrollar un módulo de estimulación física (presión mecánica) y acústica en el habitáculo.</td></tr>
+              <tr><td class="mono">OE-09</td><td>Construir una interfaz de usuario (Dashboard) básica para la visualización en tiempo real de las variables monitoreadas y el registro de datos experimentales.</td></tr>
+              <tr><td class="mono">OE-10</td><td>Elaborar y presentar la documentación necesaria para la evaluación del proyecto por un comité de ética institucional, contemplando los aspectos bioéticos asociados al desarrollo futuro del sistema.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Entregables Principales</div>
+        <div class="card-subtitle">5 ENTREGABLES FORMALES DEL PROYECTO</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Entregable</th><th>Descripción</th><th>Responsable</th><th>Criterio de Aceptación</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">E-01</td>
+                <td><strong>Prototipo físico ensamblado</strong></td>
+                <td>Receptáculo uterino bioimpreso integrado al circuito de soporte vital (bombeo, oxigenación, diálisis).</td>
+                <td>Bioingeniero / Esp. Materiales / Diseño Industrial</td>
+                <td>Superación Stage-Gates S1–S4: estanqueidad, circulación 24h, transferencia gaseosa verificada.</td>
+              </tr>
+              <tr>
+                <td class="mono">E-02</td>
+                <td><strong>Sistema electrónico (Dashboard)</strong></td>
+                <td>Sistema de sensores con interfaz de usuario para visualización y registro de datos en tiempo real.</td>
+                <td>Bioingeniero (electrónica) / Desarrollador software</td>
+                <td>Stage-Gate S5: lectura estable de variables críticas y almacenamiento de datos sin errores.</td>
+              </tr>
+              <tr>
+                <td class="mono">E-03</td>
+                <td><strong>Documentación técnica</strong></td>
+                <td>Diagramas, planos CAD, fichas técnicas de biomateriales, registro de decisiones y manual de usuario.</td>
+                <td>Director Proyecto / Biotecnólogo / Bioingeniero</td>
+                <td>Documentación aprobada que refleja el estado final "as-built" del prototipo.</td>
+              </tr>
+              <tr>
+                <td class="mono">E-04</td>
+                <td><strong>Protocolo de pruebas</strong></td>
+                <td>Procedimientos de ensayo hidráulico y térmico ejecutados con resultados y conclusiones.</td>
+                <td>Biotecnólogo / Técnico / Bioingeniero</td>
+                <td>Protocolo firmado con resultados dentro de los rangos definidos para la prueba de concepto.</td>
+              </tr>
+              <tr>
+                <td class="mono">E-05</td>
+                <td><strong>Expediente bioético</strong></td>
+                <td>Documentación formal sobre implicancias bioéticas, restricciones y marco normativo.</td>
+                <td>Director del Proyecto / Biotecnólogo</td>
+                <td>Expediente presentado y aprobación institucional obtenida para el Stage-Gate 1.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SCOPE ========== -->
+    <div id="sec-scope" class="section">
+      <div class="section-heading">Alcance del Proyecto</div>
+      <div class="section-desc">Definición de lo que está y lo que NO está incluido en el alcance.</div>
+
+      <div class="card">
+        <div class="card-title">Exclusiones del Alcance</div>
+        <div class="card-subtitle">ELEMENTOS EXPLÍCITAMENTE FUERA DEL PROYECTO</div>
+        <div class="excl-item">
+          <div class="excl-icon">✗</div>
+          <div><strong>Obtención de material biológico:</strong> la generación, adquisición o manipulación de cigotos, gametos, embriones o cualquier tejido biológico queda completamente fuera del alcance. Estos insumos, en caso de ser requeridos en fases futuras, serán provistos por terceros especializados.</div>
+        </div>
+        <div class="excl-item">
+          <div class="excl-icon">✗</div>
+          <div><strong>Modificación o edición genética:</strong> el proyecto no contempla ninguna actividad vinculada a manipulación genética, edición genómica (CRISPR u otras tecnologías) ni mejoramiento de especies.</div>
+        </div>
+        <div class="excl-item">
+          <div class="excl-icon">✗</div>
+          <div><strong>Desarrollo de fórmulas biológicas (nutrientes u hormonas):</strong> el sistema de inyección será validado únicamente a nivel mecánico y volumétrico. Los compuestos biológicos reales requeridos para el desarrollo de un organismo vivo serán definidos y provistos por laboratorios externos especializados.</div>
+        </div>
+        <div class="excl-item">
+          <div class="excl-icon">✗</div>
+          <div><strong>Producción en escala o fabricación en serie:</strong> el proyecto se limita al desarrollo de un único prototipo funcional como prueba de concepto. No se contemplan actividades de industrialización, manufactura repetitiva ni escalado del sistema.</div>
+        </div>
+        <div class="excl-item">
+          <div class="excl-icon">✗</div>
+          <div><strong>Gestación humana:</strong> el sistema excluye de forma explícita e irrevocable su uso para la gestación humana desde etapa embrionaria o in vitro, por razones bioéticas, morales y regulatorias. Su eventual derivación clínica futura en humanos se limitará estrictamente al soporte vital transitorio de neonatos prematuros extremos, y queda fuera del alcance de este proyecto.</div>
+        </div>
+        <div class="excl-item">
+          <div class="excl-icon">✗</div>
+          <div><strong>Integración con infraestructuras veterinarias externas:</strong> no se prevé la conexión ni compatibilización del sistema con equipamiento, bases de datos ni protocolos operativos de instituciones veterinarias o zoológicas externas.</div>
+        </div>
+        <div class="excl-item">
+          <div class="excl-icon">✗</div>
+          <div><strong>Protocolos de bioseguridad de nivel industrial:</strong> las pruebas se realizarán bajo condiciones estándar de laboratorio. No se desarrollarán instalaciones, cámaras de contención ni protocolos de bioseguridad de nivel BSL-3 o superior.</div>
+        </div>
+        <div class="excl-item" style="border-bottom:none">
+          <div class="excl-icon">✗</div>
+          <div><strong>Validación multi-especie en fase inicial:</strong> el presente proyecto validará el sistema únicamente con parámetros de lagomorfos. La adaptación a especies adicionales requerirá estudios de escalabilidad específicos que quedan fuera de este alcance, aunque el diseño modular del sistema facilitará futuras calibraciones.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== STAKEHOLDERS ========== -->
+    <div id="sec-stakeholders" class="section">
+      <div class="section-heading">Stakeholders</div>
+      <div class="section-desc">Identificación y análisis de todas las partes interesadas del proyecto.</div>
+
+      <div class="card">
+        <div class="card-title">Mapa de Stakeholders</div>
+        <div class="card-subtitle">USUARIOS, INTERESADOS Y ORGANISMOS REGULADORES</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Nombre / Org.</th><th>Rol</th><th>Interés en el Proyecto</th><th>Influencia</th><th>Categoría</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Institución de Conservación</strong></td>
+                <td><span class="tag tag-green">Cliente / Usuario Final</span></td>
+                <td>Éxito en la reproducción de especies en peligro crítico.</td>
+                <td><span class="tag tag-red">Alta</span></td>
+                <td>Externo</td>
+              </tr>
+              <tr>
+                <td><strong>NestBiotech (Empresa Biotech)</strong></td>
+                <td><span class="tag tag-orange">Sponsor</span></td>
+                <td>Retorno de inversión / Posicionamiento. Obtener un sistema licenciable y validado para el mercado.</td>
+                <td><span class="tag tag-red">Alta</span></td>
+                <td>Interno</td>
+              </tr>
+              <tr>
+                <td><strong>Comité de Bioética</strong></td>
+                <td><span class="tag tag-blue">Regulador</span></td>
+                <td>Cumplimiento de normativas éticas aplicables.</td>
+                <td><span class="tag tag-orange">Media</span></td>
+                <td>Externo</td>
+              </tr>
+              <tr>
+                <td><strong>Organismos Regulatorios (CICUAL, IRAM/IEC)</strong></td>
+                <td><span class="tag tag-blue">Regulador</span></td>
+                <td>Establecer el marco normativo veterinario y de seguridad eléctrica.</td>
+                <td><span class="tag tag-orange">Media</span></td>
+                <td>Externo</td>
+              </tr>
+              <tr>
+                <td><strong>Proveedores</strong></td>
+                <td><span class="tag tag-gray">Socio Externo</span></td>
+                <td>Suministro de insumos críticos (biomateriales, componentes electrónicos).</td>
+                <td><span class="tag tag-orange">Media</span></td>
+                <td>Externo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Áreas Involucradas</div>
+        <div class="card-subtitle">ESTRUCTURA ORGANIZACIONAL DEL PROYECTO</div>
+        <div class="grid-2">
+          <div class="info-box info-green"><strong>I+D — Investigación y Desarrollo</strong><br>Responsable del diseño conceptual del sistema, selección de biomateriales, definición de parámetros fisiológicos objetivo y revisión bibliográfica de antecedentes técnicos (Biobag, EVE, Weizmann). Es el área central del proyecto.</div>
+          <div class="info-box info-blue"><strong>Ingeniería</strong><br>A cargo del diseño CAD de los subsistemas, la bioimpresión del receptáculo uterino, la construcción del circuito de soporte vital (bombeo, oxigenación, diálisis) y la integración electrónica del sistema de sensores con el Dashboard. Ejecuta la fase adaptativa del ciclo de vida.</div>
+          <div class="info-box info-orange"><strong>Validación Experimental</strong><br>Responsable de la ejecución de los ensayos de laboratorio definidos en el protocolo de pruebas: pruebas hidráulicas, térmicas y de estanqueidad. Verifica el cumplimiento de los criterios de aceptación de cada Stage-Gate inter-subsistema.</div>
+          <div class="info-box info-blue"><strong>Documentación Técnica y Bioética / Comité de Ética</strong><br>Elabora y mantiene actualizada toda la documentación del proyecto: diagramas, planos, registros de pruebas, actas de Stage-Gates y el expediente requerido por el comité de ética institucional. Garantiza la trazabilidad del proceso conforme a PMBOK.</div>
+          <div class="info-box info-green"><strong>Marketing y Comunicación</strong><br>Responsable de la elaboración de materiales institucionales para la presentación del sistema ante la organización de conservación cliente y de apoyar el modelo de licenciamiento tecnológico.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== TEAM ========== -->
+    <div id="sec-team" class="section">
+      <div class="section-heading">Equipo del Proyecto</div>
+      <div class="section-desc">12 integrantes con roles y responsabilidades definidas. Cada integrante es "dueño" (owner) de las cards de su subsistema en el tablero Kanban.</div>
+
+      <div class="grid-3">
+        <div class="team-card">
+          <div class="team-avatar" style="background:var(--accent)">BB</div>
+          <div class="team-name">Bugs Bunny</div>
+          <div class="team-role">Director del Proyecto (PM)</div>
+          <div class="team-resp">Planificación, coordinación y control integral del proyecto. Gestión del ciclo de vida híbrido, conducción de Stage-Gates y reuniones de seguimiento, administración del cronograma, presupuesto, riesgos y comunicaciones. Nexo entre el sponsor, el cliente, los organismos externos y el equipo técnico. Supervisión del cumplimiento de los objetivos y toma de decisiones de escalamiento ante desvíos o bloqueos críticos.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:var(--accent3)">JH</div>
+          <div class="team-name">Judy Hopps</div>
+          <div class="team-role">Jefe de Ingeniería</div>
+          <div class="team-resp">Dirección técnica global del proyecto. Coordina las actividades de los distintos subsistemas de ingeniería (receptáculo, soporte vital, electrónica, software e integración), validación de diseños y decisiones técnicas, aprobación de entregables de ingeniería y asegura la coherencia de la arquitectura funcional del sistema. Supervisión de la integración de subsistemas y verificación del cumplimiento de los criterios técnicos para cada Stage-Gate.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#7b3f00">BH</div>
+          <div class="team-name">Belen Hornus</div>
+          <div class="team-role">Bioingeniería 1 (Diseño)</div>
+          <div class="team-resp">Diseño funcional de los subsistemas y de la integración de sensores dentro de la arquitectura general del sistema. Participación en el diseño de los módulos de soporte vital, la definición de requerimientos técnicos, la integración hardware-software y la calibración de variables fisiológicas. Colabora en la validación del desempeño global del prototipo y en la elaboración de documentación técnica de ingeniería.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#5a4a8a">MA</div>
+          <div class="team-name">Mateo Anderson</div>
+          <div class="team-role">Bioingeniero 2 (Electrónica)</div>
+          <div class="team-resp">Responsable del diseño e implementación del sistema electrónico de monitoreo y control. Integra la matriz de sensores de presión, temperatura, pH y volumen, desarrolla circuitos de adquisición de datos y participa en la validación de la lectura simultánea de variables críticas. Colabora en la integración electrónica del sistema y en la puesta en marcha del prototipo.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#2d6a4f">SC</div>
+          <div class="team-name">Sr. Conejo</div>
+          <div class="team-role">Especialista en Materiales</div>
+          <div class="team-resp">Selección, caracterización y validación de biomateriales e hidrogeles utilizados en el receptáculo bioimpreso. Validación de propiedades mecánicas, hidráulicas y de biocompatibilidad requeridas. Soporte técnico en pruebas de estanqueidad, resistencia estructural y desempeño del receptáculo.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:var(--accent2)">RR</div>
+          <div class="team-name">Roger Rabbit</div>
+          <div class="team-role">Biotecnólogo</div>
+          <div class="team-resp">Definición y validación de parámetros fisiológicos de referencia para lagomorfos. Supervisión técnica de los módulos de oxigenación, hematosis, diálisis e infusión de fluidos, y asesoramiento en aspectos biológicos y fisiológicos. Participación en la elaboración del expediente bioético, documentación para organismos reguladores y la definición de protocolos experimentales y criterios de validación biológica del prototipo.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#4a7c59">SN</div>
+          <div class="team-name">Snowball</div>
+          <div class="team-role">Técnico de Laboratorio</div>
+          <div class="team-resp">Ejecución de ensayos hidráulicos, térmicos, de estanqueidad y de circulación continua. Operación del prototipo durante las pruebas experimentales, registro de datos y resultados. Informa incidentes, desvíos o anomalías detectadas durante la validación.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#6b6760">LB</div>
+          <div class="team-name">Lola Bunny</div>
+          <div class="team-role">Desarrolladora de Software</div>
+          <div class="team-resp">Desarrollo del Dashboard de monitoreo y control en tiempo real. Diseño e implementación del sistema de almacenamiento, registro y trazabilidad de datos experimentales. Integrar la interfaz con la matriz de sensores y asegurar la visualización confiable de las variables críticas del sistema. Validación de la comunicación entre hardware y software.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#b5451b">FA</div>
+          <div class="team-name">Fatu</div>
+          <div class="team-role">Lic. en Diseño Industrial</div>
+          <div class="team-resp">Diseño funcional, ergonómico y constructivo del receptáculo y del habitáculo del sistema. Modelado CAD. Coordinación de aspectos de diseño relacionados con la bioimpresión y el ensamblaje físico de los subsistemas.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#1d4e89">PR</div>
+          <div class="team-name">Peter Rabbit</div>
+          <div class="team-role">Lic. en Marketing</div>
+          <div class="team-resp">Elaboración de materiales de comunicación institucional y documentación comercial del proyecto. Colaboración en la relación con la institución cliente. Participación en la definición y promoción del modelo de licenciamiento de la solución desarrollada.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#4a4a70">SR</div>
+          <div class="team-name">Sheila Riffel</div>
+          <div class="team-role">Gestora de Calidad</div>
+          <div class="team-resp">Diseño, implementación y supervisión del Sistema de Gestión de Calidad del proyecto. Definición de procedimientos, criterios de aceptación y mecanismos de trazabilidad documental. Coordinación de auditorías, verificación del cumplimiento de estándares de calidad, requisitos normativos y criterios establecidos para los Stage-Gates.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#5a7a5a">NA</div>
+          <div class="team-name">Najin</div>
+          <div class="team-role">Contador</div>
+          <div class="team-resp">Planificación, control y seguimiento financiero del proyecto. Gestión de presupuestos, monitoreo de costos y desvíos económicos, participación en la contratación de proveedores y en la aprobación de gastos. Proporción de información financiera para la toma de decisiones del equipo directivo y del sponsor.</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:16px">
+        <div class="team-card">
+          <div class="team-avatar" style="background:#2a2a2a; font-size:12px">SU</div>
+          <div class="team-name">Sudan</div>
+          <div class="team-role">Sponsor (NestBiotech)</div>
+          <div class="team-resp">Patrocinio y financiamiento del proyecto. Participación en los Stage-Gates críticos y evaluación del cumplimiento de los objetivos de negocio, licenciamiento y retorno de inversión esperados.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#8b4513; font-size:11px">NS</div>
+          <div class="team-name">Nymeria Stark</div>
+          <div class="team-role">Organismo Regulador / Comité de Bioética</div>
+          <div class="team-resp">Evaluación del cumplimiento de requisitos éticos, regulatorios y de seguridad aplicables al proyecto.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LIFECYCLE ========== -->
+    <div id="sec-lifecycle" class="section">
+      <div class="section-heading">Ciclo de Vida del Proyecto</div>
+      <div class="section-desc">Enfoque híbrido: fases predictivas (1 y 4) + fases adaptativas Kanban (2 y 3), articuladas por Stage-Gates.</div>
+
+      <div class="info-box info-green" style="margin-bottom:16px">
+        <strong>Enfoque Híbrido:</strong> Los Stage-Gates gobiernan el <em>qué y cuándo avanzar</em>. Kanban gobierna el <em>cómo ejecutar</em>. Esta distinción de capas es intencional y estructural.
+      </div>
+
+      <div class="card">
+        <div class="card-title">Fase 1 — Planificación y Definición</div>
+        <div class="card-subtitle"><span class="tag tag-blue">PREDICTIVA</span> &nbsp; 3 ago 2026 → 1 dic 2026</div>
+        <div class="body-text">
+          Enfoque predictivo orientado a establecer las bases organizacionales, regulatorias y técnicas necesarias para la ejecución posterior. Resulta fundamental reducir la incertidumbre asociada al alcance, los requisitos, las restricciones normativas y la arquitectura general del sistema antes de comprometer recursos de laboratorio y fabricación.<br><br>
+          <strong>Tres líneas de trabajo:</strong>
+        </div>
+        <div class="grid-3" style="margin-top:12px">
+          <div class="info-box info-blue"><strong>1.1 Gestión del Proyecto</strong><br>Marcos de gobernanza y control del proyecto. 7 tareas, 25 días hábiles.</div>
+          <div class="info-box info-green"><strong>1.2 Expediente Bioético</strong><br>Cumplimiento de requisitos regulatorios y éticos aplicables. Incluye espera CICUAL (30 días hábiles).</div>
+          <div class="info-box info-orange"><strong>1.3 Definición Técnica</strong><br>Ingeniería conceptual: arquitectura funcional, parámetros fisiológicos, matriz de escalabilidad.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Fase 2 — Desarrollo de Subsistemas</div>
+        <div class="card-subtitle"><span class="tag tag-orange">KANBAN ADAPTATIVA</span> &nbsp; 2 dic 2026 → 19 feb 2027</div>
+        <div class="body-text">
+          Elevada incertidumbre técnica: los resultados experimentales pueden requerir modificaciones sucesivas en el diseño. Los biomateriales pueden demandar ajustes luego de las pruebas hidráulicas, los parámetros fisiológicos requieren calibración empírica y procesos como la bioimpresión o el curado de hidrogeles poseen duraciones variables.<br><br>
+          <strong>No se utiliza Gantt detallado con fechas absolutas.</strong> En su lugar: Roadmap de fases con Stage-Gates + Tablero Kanban + Mapa de dependencias estructurales + Métricas de flujo (cycle time, throughput, CFD).
+        </div>
+        <div class="grid-3" style="margin-top:12px">
+          <div class="info-box info-green"><strong>2.1 Receptáculo Uterino</strong><br>WIP=2 · 15 días hábiles · 2 dic → 23 dic 2026</div>
+          <div class="info-box info-blue"><strong>2.2 Circuitos de Soporte Vital</strong><br>WIP=2 · 21 días hábiles · 24 dic → 25 ene 2027</div>
+          <div class="info-box info-orange"><strong>2.3 Electrónica y Control</strong><br>WIP=2 · 17 días hábiles · 26 ene → 19 feb 2027</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Fase 3 — Integración y Validación Final</div>
+        <div class="card-subtitle"><span class="tag tag-orange">KANBAN (WIP restrictivo)</span> &nbsp; 8 mar 2027 → 5 may 2027</div>
+        <div class="body-text">
+          El flujo de trabajo se vuelve más restrictivo debido a las fuertes dependencias entre actividades. La integración mecánica, electrónica y funcional requiere que cada tarea sea completada y validada antes de iniciar la siguiente.<br><br>
+          <strong>WIP=1</strong> en ambas subfases (3.1 y 3.2), priorizando la estabilidad del sistema, la trazabilidad de resultados y la reducción de riesgos durante las pruebas finales.<br><br>
+          <em>Nota: 2 semanas de vacaciones del 22 feb al 5 mar 2027 entre fases 2 y 3.</em>
+        </div>
+        <div class="grid-2" style="margin-top:12px">
+          <div class="info-box info-blue"><strong>3.1 Integración Mecánica y Electrónica</strong><br>WIP=1 en serie · 20 días hábiles · 8 mar → 6 abr 2027</div>
+          <div class="info-box info-green"><strong>3.2 Protocolo de Pruebas de Sistema</strong><br>WIP=1 en serie · 20 días hábiles · 7 abr → 5 may 2027</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Fase 4 — Cierre y Transferencia</div>
+        <div class="card-subtitle"><span class="tag tag-blue">PREDICTIVA</span> &nbsp; 6 may 2027 → 28 may 2027</div>
+        <div class="body-text">
+          Una vez validado el prototipo se adopta nuevamente un enfoque predictivo para consolidar y transferir los resultados obtenidos.
+        </div>
+        <div class="grid-2" style="margin-top:12px">
+          <div class="info-box info-orange"><strong>4.1 Documentación Técnica "As-Built"</strong><br>12 días hábiles · 6 may → 21 may 2027</div>
+          <div class="info-box info-green"><strong>4.2 Marketing y Licenciamiento</strong><br>4 días hábiles · 24 may → 28 may 2027</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Justificación de Kanban sobre otros marcos ágiles</div>
+        <div class="card-subtitle">POR QUÉ KANBAN Y NO SCRUM</div>
+        <div class="grid-2">
+          <div>
+            <div class="small-label">Flujo continuo compatible con laboratorio</div>
+            <div class="body-text" style="margin-bottom:14px">A diferencia de Scrum, Kanban no impone sprints (iteraciones) temporales fijas. Esto resulta especialmente adecuado para un proyecto experimental donde actividades como la bioimpresión, el curado de materiales o las pruebas hidráulicas poseen duraciones variables e inciertas.</div>
+            <div class="small-label">Visualización del trabajo</div>
+            <div class="body-text" style="margin-bottom:14px">El tablero Kanban permite visualizar el estado de cada subsistema en tiempo real, facilitando la identificación temprana de bloqueos y cuellos de botella antes de que afecten la integración global del sistema.</div>
+          </div>
+          <div>
+            <div class="small-label">Control del WIP (Work In Progress)</div>
+            <div class="body-text" style="margin-bottom:14px">La limitación explícita del WIP evita la sobrecarga del equipo y promueve la finalización de tareas antes de iniciar nuevas actividades, reduciendo los riesgos de integración entre el hardware, software y subsistemas biológicos.</div>
+            <div class="small-label">Adaptabilidad frente a resultados experimentales</div>
+            <div class="body-text">Si una prueba no cumple los criterios de aceptación establecidos, la tarea puede regresar a etapas previas del flujo sin necesidad de replantear la planificación completa del proyecto. Esto permite incorporar aprendizaje continuo manteniendo la trazabilidad de las decisiones técnicas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== WBS ========== -->
+    <div id="sec-wbs" class="section">
+      <div class="section-heading">WBS — Work Breakdown Structure</div>
+      <div class="section-desc">44 tareas distribuidas en 4 fases. Haz clic en cada fase para expandir o contraer.</div>
+
+      <!-- FASE 1 -->
+      <div class="wbs-phase">
+        <div class="wbs-phase-header" onclick="toggleWbs('wbs1')">
+          <div class="wbs-phase-id">FASE 1</div>
+          <div class="wbs-phase-name">Planificación y Definición (Predictiva)</div>
+          <span class="tag tag-blue" style="margin-left:12px">17 tareas</span>
+          <div class="wbs-phase-arrow" id="wbs1-arrow">▼</div>
+        </div>
+        <div class="wbs-phase-body open" id="wbs1-body">
+          <div class="wbs-task-header"><span>ID</span><span>Tarea</span><span>Entregable</span><span>Criterio de Completitud</span></div>
+
+          <div class="wbs-subgroup">1.1 — Gestión del Proyecto</div>
+          <div class="wbs-task"><div class="wbs-task-id">1.1.1</div><div class="wbs-task-name">Redactar Acta de Constitución</div><div class="wbs-task-deliverable">Acta de Constitución</div><div class="wbs-task-criteria">Firma del sponsor y aprobación formal.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.1.2</div><div class="wbs-task-name">Elaborar Plan de Gestión del Proyecto (alcance, cronograma)</div><div class="wbs-task-deliverable">Plan de Gestión</div><div class="wbs-task-criteria">Plan aprobado por el equipo directivo.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.1.3</div><div class="wbs-task-name">Identificar y registrar stakeholders y estrategia</div><div class="wbs-task-deliverable">Registro de Stakeholders</div><div class="wbs-task-criteria">Matriz de stakeholders completa.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.1.4</div><div class="wbs-task-name">Elaborar registro de riesgos inicial</div><div class="wbs-task-deliverable">Registro de Riesgos</div><div class="wbs-task-criteria">Matriz de riesgos priorizada.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.1.5</div><div class="wbs-task-name">Diagramar presupuesto</div><div class="wbs-task-deliverable">Presupuesto Inicial</div><div class="wbs-task-criteria">Presupuesto validado por finanzas.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.1.6</div><div class="wbs-task-name">Gestionar contratos con proveedores para biomateriales, componentes electrónicos e insumos tercerizados</div><div class="wbs-task-deliverable">Contratos y Convenios</div><div class="wbs-task-criteria">Contratos firmados y órdenes generadas.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.1.7</div><div class="wbs-task-name">Realizar reunión de Kick Off</div><div class="wbs-task-deliverable">Acta de Kick Off</div><div class="wbs-task-criteria">Acta de reunión distribuida.</div></div>
+
+          <div class="wbs-subgroup">1.2 — Expediente Bioético y Normativo</div>
+          <div class="wbs-task"><div class="wbs-task-id">1.2.1</div><div class="wbs-task-name">Elaborar documentación para el Comité de Ética Institucional</div><div class="wbs-task-deliverable">Expediente Ético</div><div class="wbs-task-criteria">Expediente completo para presentación.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.2.2</div><div class="wbs-task-name">Analizar implicancias y restricciones de uso</div><div class="wbs-task-deliverable">Informe de Restricciones</div><div class="wbs-task-criteria">Informe firmado por especialistas.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.2.3</div><div class="wbs-task-name">Ejecutar etapa de revisión de documentación institucional</div><div class="wbs-task-deliverable">Informe de Revisión</div><div class="wbs-task-criteria">Visto bueno del departamento legal.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.2.4</div><div class="wbs-task-name">Enviar documentación al organismo de ética</div><div class="wbs-task-deliverable">Comprobante de envío</div><div class="wbs-task-criteria">Sello de recepción del organismo.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.2.5</div><div class="wbs-task-name">Obtención de aprobación de seguridad eléctrica (IRAM/IEC) — envío y devolución</div><div class="wbs-task-deliverable">Certificado IRAM/IEC</div><div class="wbs-task-criteria">Certificado IRAM/IEC recibido.</div></div>
+          <div class="wbs-task" style="background:var(--accent3-light)"><div class="wbs-task-id" style="color:var(--accent3)">1.2.6</div><div class="wbs-task-name" style="color:var(--accent3)"><strong>⬡ HITO:</strong> Obtención de aprobación ética de CICUAL (Hito de avance)</div><div class="wbs-task-deliverable" style="color:var(--accent3)">Aprobación CICUAL</div><div class="wbs-task-criteria" style="color:var(--accent3)">Documento oficial de CICUAL recibido. ~30-45 días trámite.</div></div>
+
+          <div class="wbs-subgroup">1.3 — Definición Técnica de Subsistemas</div>
+          <div class="wbs-task"><div class="wbs-task-id">1.3.1</div><div class="wbs-task-name">Definir parámetros fisiológicos de referencia (Lagomorfos — O. cuniculus)</div><div class="wbs-task-deliverable">Documento de Parámetros</div><div class="wbs-task-criteria">Tabla de parámetros validada (rangos temp, pH, flujos).</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.3.2</div><div class="wbs-task-name">Elaborar matriz de escalabilidad</div><div class="wbs-task-deliverable">Matriz de Escalabilidad</div><div class="wbs-task-criteria">Matriz con 3 categorías (S/M/L).</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.3.3</div><div class="wbs-task-name">Diseñar arquitectura funcional del sistema</div><div class="wbs-task-deliverable">Diseño Funcional</div><div class="wbs-task-criteria">Diagrama de arquitectura aprobado.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">1.3.4</div><div class="wbs-task-name">Elaborar diagramas de flujo del sistema (P&ID)</div><div class="wbs-task-deliverable">Diagramas del Sistema</div><div class="wbs-task-criteria">Diagramas validados por ingeniería.</div></div>
+        </div>
+      </div>
+
+      <!-- FASE 2 -->
+      <div class="wbs-phase">
+        <div class="wbs-phase-header" onclick="toggleWbs('wbs2')" style="background:#1d4e89">
+          <div class="wbs-phase-id">FASE 2</div>
+          <div class="wbs-phase-name">Desarrollo de Subsistemas (Kanban)</div>
+          <span class="tag tag-blue" style="margin-left:12px; background:rgba(255,255,255,0.15); color:#fff">13 tareas</span>
+          <div class="wbs-phase-arrow" id="wbs2-arrow">▼</div>
+        </div>
+        <div class="wbs-phase-body open" id="wbs2-body">
+          <div class="wbs-task-header"><span>ID</span><span>Tarea</span><span>Entregable</span><span>Criterio de Completitud</span></div>
+
+          <div class="wbs-subgroup">2.1 — Receptáculo Uterino</div>
+          <div class="wbs-task"><div class="wbs-task-id">2.1.1</div><div class="wbs-task-name">Compra a proveedores de materiales tercerizados (hidrogeles, polímeros, reactivos)</div><div class="wbs-task-deliverable">Materiales Adquiridos</div><div class="wbs-task-criteria">Materiales recibidos en laboratorio.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">2.1.2</div><div class="wbs-task-name">Diseñar modelo CAD del habitáculo uterino (escala lagomorfa, 200-400ml)</div><div class="wbs-task-deliverable">Modelo CAD</div><div class="wbs-task-criteria">Modelo CAD revisado y aprobado por par.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">2.1.3</div><div class="wbs-task-name">Bioimprimir receptáculo con hidrogeles/biomateriales (fabricación aditiva)</div><div class="wbs-task-deliverable">Prototipo Bioimpreso</div><div class="wbs-task-criteria">Pieza física terminada, registro fotográfico e ID de lote.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">2.1.4</div><div class="wbs-task-name">Ejecutar pruebas de estanqueidad y resistencia a presión nominal</div><div class="wbs-task-deliverable">Informe de Ensayos</div><div class="wbs-task-criteria">Aprobación Stage-Gate S1: sin fugas ni deformación estructural.</div></div>
+
+          <div class="wbs-subgroup">2.2 — Circuitos de Soporte Vital</div>
+          <div class="wbs-task"><div class="wbs-task-id">2.2.1</div><div class="wbs-task-name">Diseñar y ensamblar módulo de bombeo — Corazón artificial (bomba peristáltica, circuito cerrado)</div><div class="wbs-task-deliverable">Módulo de Bombeo</div><div class="wbs-task-criteria">Prototipo de bombeo funcional (SG-S2: circulación 24hs sin pérdidas &gt;5%).</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">2.2.2</div><div class="wbs-task-name">Desarrollar sistema de hematosis artificial (oxigenación y descarboxilación, oxigenador de membrana)</div><div class="wbs-task-deliverable">Sistema de Hematosis</div><div class="wbs-task-criteria">Prototipo de hematosis funcional (SG-S3: transferencia gaseosa en rangos fisiológicos).</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">2.2.3</div><div class="wbs-task-name">Diseñar módulo de filtrado y diálisis (remoción de desechos metabólicos y urea simulados)</div><div class="wbs-task-deliverable">Sistema de Filtrado</div><div class="wbs-task-criteria">Prototipo funcional (SG-S4: remoción por encima del umbral definido).</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">2.2.4</div><div class="wbs-task-name">Diseñar sistema de inyección controlada (nutrientes y hormonas simuladas, bomba de infusión)</div><div class="wbs-task-deliverable">Sistema de Inyección</div><div class="wbs-task-criteria">Prototipo de inyección funcional, flujo regulable validado.</div></div>
+
+          <div class="wbs-subgroup">2.3 — Electrónica y Control</div>
+          <div class="wbs-task"><div class="wbs-task-id">2.3.1</div><div class="wbs-task-name">Integrar matriz de sensores (presión, temperatura, pH, volumen) en el receptáculo y circuitos</div><div class="wbs-task-deliverable">Matriz de Sensores</div><div class="wbs-task-criteria">Sensores integrados, cableados y con lectura verificada.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">2.3.2</div><div class="wbs-task-name">Desarrollar interfaz de usuario (Dashboard) — UI tiempo real, alarmas, gráficos históricos</div><div class="wbs-task-deliverable">Dashboard Funcional</div><div class="wbs-task-criteria">Interfaz funcional con visualización de 4 variables críticas.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">2.3.3</div><div class="wbs-task-name">Desarrollar módulo de estimulación (presión mecánica + emisión acústica en habitáculo)</div><div class="wbs-task-deliverable">Módulo de Estimulación</div><div class="wbs-task-criteria">Módulo probado mecánica y acústicamente.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">2.3.4</div><div class="wbs-task-name">Implementar sistema de almacenamiento y registro de datos experimentales (BD persistente, SG-S5)</div><div class="wbs-task-deliverable">Base de Datos Experimental</div><div class="wbs-task-criteria">Sistema de almacenamiento operativo, sin pérdidas en 24hs (SG-S5).</div></div>
+        </div>
+      </div>
+
+      <!-- FASE 3 -->
+      <div class="wbs-phase">
+        <div class="wbs-phase-header" onclick="toggleWbs('wbs3')" style="background:#b5451b">
+          <div class="wbs-phase-id">FASE 3</div>
+          <div class="wbs-phase-name">Integración y Validación Final</div>
+          <span class="tag" style="margin-left:12px; background:rgba(255,255,255,0.15); color:#fff; font-size:11px">8 tareas</span>
+          <div class="wbs-phase-arrow" id="wbs3-arrow">▼</div>
+        </div>
+        <div class="wbs-phase-body open" id="wbs3-body">
+          <div class="wbs-task-header"><span>ID</span><span>Tarea</span><span>Entregable</span><span>Criterio de Completitud</span></div>
+
+          <div class="wbs-subgroup">3.1 — Integración Mecánica y Electrónica</div>
+          <div class="wbs-task"><div class="wbs-task-id">3.1.1</div><div class="wbs-task-name">Ensamblar prototipo físico completo (integración mecánica de TODOS los subsistemas)</div><div class="wbs-task-deliverable">Prototipo Integrado</div><div class="wbs-task-criteria">Sistema ensamblado al 100%.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">3.1.2</div><div class="wbs-task-name">Acoplar sensores al Dashboard (conexión eléctrica + calibración sensores-software)</div><div class="wbs-task-deliverable">Enlace Software/HW</div><div class="wbs-task-criteria">Lectura de 4 variables en pantalla coherente.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">3.1.3</div><div class="wbs-task-name">Calibrar parámetros fisiológicos del sistema (ajuste fino a rangos lagomorfos, error &lt;5%)</div><div class="wbs-task-deliverable">Sistema Calibrado</div><div class="wbs-task-criteria">Error de medición &lt; 5%. Gate S6 aprobado.</div></div>
+
+          <div class="wbs-subgroup">3.2 — Protocolo de Pruebas de Sistema</div>
+          <div class="wbs-task"><div class="wbs-task-id">3.2.1</div><div class="wbs-task-name">Ejecutar ensayos hidráulicos integrados (flujo, presión, estanqueidad del sistema completo)</div><div class="wbs-task-deliverable">Informe Hidráulico</div><div class="wbs-task-criteria">Operación sin fugas ni cavitación.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">3.2.2</div><div class="wbs-task-name">Ejecutar ensayos térmicos integrados (validar control temperatura 37-38°C, estabilidad ±0.5°C)</div><div class="wbs-task-deliverable">Informe Térmico</div><div class="wbs-task-criteria">Estabilidad lograda (±0.5°C).</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">3.2.3</div><div class="wbs-task-name">Ejecutar simulación de circulación continua — Prueba de 24hs (todos los subsistemas, SG-S6)</div><div class="wbs-task-deliverable">Informe de Simulación</div><div class="wbs-task-criteria">24hs sin paradas críticas.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">3.2.4</div><div class="wbs-task-name">Redactar informe final de resultados y conclusiones (consolidar datos, analizar, redactar)</div><div class="wbs-task-deliverable">Informe Final</div><div class="wbs-task-criteria">Informe final aprobado.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">3.2.5</div><div class="wbs-task-name">Gestionar validación externa para control de calidad (coordinar tercero, preparar envío, normativa)</div><div class="wbs-task-deliverable">Certificación de Calidad</div><div class="wbs-task-criteria">Certificación de calidad recibida.</div></div>
+        </div>
+      </div>
+
+      <!-- FASE 4 -->
+      <div class="wbs-phase">
+        <div class="wbs-phase-header" onclick="toggleWbs('wbs4')" style="background:#7b3f00">
+          <div class="wbs-phase-id">FASE 4</div>
+          <div class="wbs-phase-name">Cierre y Transferencia</div>
+          <span class="tag" style="margin-left:12px; background:rgba(255,255,255,0.15); color:#fff; font-size:11px">6 tareas</span>
+          <div class="wbs-phase-arrow" id="wbs4-arrow">▼</div>
+        </div>
+        <div class="wbs-phase-body open" id="wbs4-body">
+          <div class="wbs-task-header"><span>ID</span><span>Tarea</span><span>Entregable</span><span>Criterio de Completitud</span></div>
+
+          <div class="wbs-subgroup">4.1 — Documentación Técnica "As-Built"</div>
+          <div class="wbs-task"><div class="wbs-task-id">4.1.1</div><div class="wbs-task-name">Actualizar planos finales (planos CAD actualizados reflejando modificaciones reales del prototipo)</div><div class="wbs-task-deliverable">Planos Finales</div><div class="wbs-task-criteria">Planos finales entregados y versionados.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">4.1.2</div><div class="wbs-task-name">Elaborar fichas técnicas (specs de biomateriales + componentes electrónicos + parámetros operativos)</div><div class="wbs-task-deliverable">Fichas Técnicas</div><div class="wbs-task-criteria">Fichas técnicas completas y archivadas.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">4.1.3</div><div class="wbs-task-name">Consolidar log de decisiones (historial de cambios de diseño + justificaciones + lecciones aprendidas)</div><div class="wbs-task-deliverable">Log de Decisiones</div><div class="wbs-task-criteria">Log cerrado y trazable.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">4.1.4</div><div class="wbs-task-name">Elaborar manual de usuario (operación, monitoreo, mantenimiento, troubleshooting)</div><div class="wbs-task-deliverable">Manual de Operación</div><div class="wbs-task-criteria">Manual entregado y validado.</div></div>
+
+          <div class="wbs-subgroup">4.2 — Marketing y Licenciamiento</div>
+          <div class="wbs-task"><div class="wbs-task-id">4.2.1</div><div class="wbs-task-name">Realizar reunión de cierre (lecciones aprendidas, cierre administrativo)</div><div class="wbs-task-deliverable">Acta de Cierre</div><div class="wbs-task-criteria">Acta de cierre firmada.</div></div>
+          <div class="wbs-task"><div class="wbs-task-id">4.2.2</div><div class="wbs-task-name">Realizar presentación final a la Institución de Conservación (demo en vivo + pitch deck + one-pager)</div><div class="wbs-task-deliverable">Presentación Final</div><div class="wbs-task-criteria">Recepción conforme del cliente.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ROADMAP ========== -->
+    <div id="sec-roadmap" class="section">
+      <div class="section-heading">Roadmap del Proyecto</div>
+      <div class="section-desc">Inicio: 3 Agosto 2026 · Fin: 28 Mayo 2027 · El Gantt con fechas absolutas por tarea se reemplaza por este Roadmap para las fases adaptativas.</div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Fase / Subfase</th><th>Enfoque</th><th>Inicio</th><th>Fin</th><th>Días hábiles</th><th>Esfuerzo total (hs)</th><th>Cuello de botella</th></tr>
+            </thead>
+            <tbody>
+              <tr style="background:#f5f3ef"><td colspan="7"><strong>FASE 1 — Planificación y Definición</strong></td></tr>
+              <tr><td>1.1 Gestión del Proyecto</td><td><span class="tag tag-blue">Predictiva</span></td><td class="mono">03/08/2026</td><td class="mono">07/09/2026</td><td class="mono">25</td><td class="mono">194,5 hs (RACI)</td><td>Contador a medio tiempo</td></tr>
+              <tr><td>1.2 Expediente Bioético</td><td><span class="tag tag-blue">Predictiva</span></td><td class="mono">08/09/2026</td><td class="mono">06/11/2026</td><td class="mono">43 (13+30)</td><td class="mono">103 hs + espera CICUAL</td><td>Espera CICUAL 30 días</td></tr>
+              <tr><td>1.3 Definición Técnica</td><td><span class="tag tag-blue">Predictiva</span></td><td class="mono">09/11/2026</td><td class="mono">01/12/2026</td><td class="mono">16</td><td class="mono">126 hs</td><td>—</td></tr>
+              <tr style="background:#f5f3ef"><td colspan="7"><strong>FASE 2 — Desarrollo de Subsistemas</strong></td></tr>
+              <tr><td>2.1 Receptáculo Uterino</td><td><span class="tag tag-orange">Kanban WIP=2</span></td><td class="mono">02/12/2026</td><td class="mono">23/12/2026</td><td class="mono">15</td><td class="mono">206,9 hs</td><td>Slot 1: 112,2h (bioimpresión)</td></tr>
+              <tr><td>2.2 Circuitos de Soporte Vital</td><td><span class="tag tag-orange">Kanban WIP=2</span></td><td class="mono">24/12/2026</td><td class="mono">25/01/2027</td><td class="mono">21</td><td class="mono">323,8 hs</td><td>Slot 2: 164,8h (hematosis)</td></tr>
+              <tr><td>2.3 Electrónica y Control</td><td><span class="tag tag-orange">Kanban WIP=2</span></td><td class="mono">26/01/2027</td><td class="mono">19/02/2027</td><td class="mono">17</td><td class="mono">237,6 hs</td><td>Slot 2: 133h (dashboard)</td></tr>
+              <tr style="background:#fef3e2"><td colspan="7"><em>⛱ VACACIONES: 22 feb 2027 → 05 mar 2027 (2 semanas)</em></td></tr>
+              <tr style="background:#f5f3ef"><td colspan="7"><strong>FASE 3 — Integración y Validación</strong></td></tr>
+              <tr><td>3.1 Integración Mecánica y Electrónica</td><td><span class="tag tag-red">Kanban WIP=1</span></td><td class="mono">08/03/2027</td><td class="mono">06/04/2027</td><td class="mono">20</td><td class="mono">153,6 hs</td><td>Serie estricta (ensamble→sensores→calibración)</td></tr>
+              <tr><td>3.2 Protocolo de Pruebas</td><td><span class="tag tag-red">Kanban WIP=1</span></td><td class="mono">07/04/2027</td><td class="mono">05/05/2027</td><td class="mono">20</td><td class="mono">156,2 hs</td><td>Serie estricta (hidráulico→térmico→24hs→informe→QA)</td></tr>
+              <tr style="background:#f5f3ef"><td colspan="7"><strong>FASE 4 — Cierre y Transferencia</strong></td></tr>
+              <tr><td>4.1 Documentación As-Built</td><td><span class="tag tag-blue">Predictiva</span></td><td class="mono">06/05/2027</td><td class="mono">21/05/2027</td><td class="mono">12</td><td class="mono">95,6 hs</td><td>—</td></tr>
+              <tr><td>4.2 Marketing y Licenciamiento</td><td><span class="tag tag-blue">Predictiva</span></td><td class="mono">24/05/2027</td><td class="mono">28/05/2027</td><td class="mono">4</td><td class="mono">24,1 hs</td><td>—</td></tr>
+              <tr style="background:#d8f3e3; font-weight:700"><td colspan="2"><strong>🎯 FIN DEL PROYECTO</strong></td><td colspan="2" class="mono"><strong>28/05/2027</strong></td><td class="mono"><strong>~173 días hábiles</strong></td><td class="mono"><strong>1747,9 hs totales</strong></td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Feriados Descontados por Subfase</div>
+        <div class="card-subtitle">CALENDARIO ARGENTINO 2026–2027</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Feriado</th><th>Fecha</th><th>Afecta a</th></tr></thead>
+            <tbody>
+              <tr><td>Día de San Martín</td><td class="mono">17/08/2026</td><td>Subfase 1.1</td></tr>
+              <tr><td>Día de la Diversidad Cultural</td><td class="mono">12/10/2026</td><td>Subfase 1.2 (espera CICUAL)</td></tr>
+              <tr><td>Día de la Soberanía Nacional</td><td class="mono">20/11/2026</td><td>Subfase 1.3</td></tr>
+              <tr><td>Inmaculada Concepción</td><td class="mono">08/12/2026</td><td>Subfase 2.1</td></tr>
+              <tr><td>Navidad</td><td class="mono">25/12/2026</td><td>Subfase 2.2</td></tr>
+              <tr><td>Año Nuevo</td><td class="mono">01/01/2027</td><td>Subfase 2.2</td></tr>
+              <tr><td>Carnaval</td><td class="mono">15/02/2027 y 16/02/2027</td><td>Subfase 2.3</td></tr>
+              <tr><td>Día de la Memoria</td><td class="mono">24/03/2027</td><td>Subfase 3.1</td></tr>
+              <tr><td>Día de Malvinas</td><td class="mono">02/04/2027</td><td>Subfase 3.1</td></tr>
+              <tr><td>Puente (30 de Abril)</td><td class="mono">30/04/2027</td><td>Subfase 3.2</td></tr>
+              <tr><td>Día de la Patria</td><td class="mono">25/05/2027</td><td>Subfase 4.2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PERT ========== -->
+    <div id="sec-pert" class="section">
+      <div class="section-heading">Estimaciones PERT — Delphi</div>
+      <div class="section-desc">3 expertos (3 bioingenieros). TE = (O + 4·M + P) / 6 · σ = (P − O) / 6 · Varianza = σ²</div>
+
+      <div class="info-box info-blue" style="margin-bottom:16px">
+        <strong>Interpretación PERT:</strong> Intervalo de confianza 68%: TE ± σ · 95%: TE ± 2σ · 99.7%: TE ± 3σ<br>
+        <strong>Total proyecto:</strong> TE = 1747,9 hs · σ total = √3207,5 ≈ <strong>56,6 hs</strong> · Varianza total = 3207,5
+      </div>
+
+      <div class="card" style="padding:0">
+        <div class="raci-wrap" style="padding:0">
+          <table style="min-width:900px; border-collapse:collapse; font-size:12px; width:100%">
+            <thead>
+              <tr>
+                <th style="min-width:60px">ID</th>
+                <th style="min-width:260px">Tarea</th>
+                <th>O avg</th><th>M avg</th><th>P avg</th>
+                <th>TE (hs/p)</th>
+                <th>σ</th>
+                <th>Varianza</th>
+                <th style="min-width:200px">Riesgo / Comentario</th>
+              </tr>
+            </thead>
+            <tbody id="pert-tbody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== KANBAN ========== -->
+    <div id="sec-kanban" class="section">
+      <div class="section-heading">Tablero Kanban & WIP Limits</div>
+      <div class="section-desc">Gestión del flujo de trabajo en las fases adaptativas del proyecto. Los límites WIP son reglas de operación, no sugerencias.</div>
+
+      <div class="card">
+        <div class="card-title">WIP Limits por Columna/Subfase</div>
+        <div class="card-subtitle">JUSTIFICACIÓN DE CADA LÍMITE</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Subfase</th><th>WIP Límite</th><th>Justificación</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>2.1 Receptáculo Uterino</strong></td>
+                <td><span class="tag tag-green" style="font-size:14px; font-weight:700">2</span></td>
+                <td>El receptáculo tiene tareas con perfiles distintos (compra/CAD vs. bioimpresión/pruebas), lo que permite que dos recursos trabajen en paralelo sin bloquearse. El equipamiento de bioimpresión es el recurso crítico, y con WIP=2 se evita que quede ocioso mientras se modela el CAD.</td>
+              </tr>
+              <tr>
+                <td><strong>2.2 Circuitos de Soporte Vital</strong></td>
+                <td><span class="tag tag-green" style="font-size:14px; font-weight:700">2</span></td>
+                <td>Los módulos de soporte vital (bombeo, hematosis, diálisis, inyección) son desarrollados por perfiles diferentes (Bioing 1 y Bioing 2), por lo que dos tareas pueden coexistir sin saturar al equipo. Limitar a 2 evita dispersión antes de tener subsistemas validados.</td>
+              </tr>
+              <tr>
+                <td><strong>2.3 Electrónica y Control</strong></td>
+                <td><span class="tag tag-green" style="font-size:14px; font-weight:700">2</span></td>
+                <td>La electrónica y el software tienen dependencias cruzadas (los sensores deben estar integrados antes de calibrar el dashboard), pero el desarrollo de hardware y software puede correr en paralelo.</td>
+              </tr>
+              <tr>
+                <td><strong>3.1 Integración Mecánica y Electrónica</strong></td>
+                <td><span class="tag tag-red" style="font-size:14px; font-weight:700">1</span></td>
+                <td>La integración mecánica y electrónica requiere que cada tarea esté completamente finalizada antes de avanzar a la siguiente, ya que ensamblar el prototipo, acoplar los sensores y calibrar el sistema son pasos estrictamente dependientes entre sí. Comenzar la calibración sin tener los sensores integrados generaría retrabajo y riesgo de daño al sistema.</td>
+              </tr>
+              <tr>
+                <td><strong>3.2 Protocolo de Pruebas</strong></td>
+                <td><span class="tag tag-red" style="font-size:14px; font-weight:700">1</span></td>
+                <td>Las pruebas de sistema son estrictamente secuenciales por diseño, el responsable de dichas tareas es la misma persona, además de que no tiene sentido ejecutar ensayos térmicos si los hidráulicos fallaron, ni redactar el informe antes de completar la simulación de 24hs.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Políticas Explícitas — DoR y DoD</div>
+        <div class="card-subtitle">DEFINITION OF READY / DEFINITION OF DONE POR SUBFASE</div>
+
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAcc('dor21')">
+            <div class="accordion-title"><span class="tag tag-green">2.1</span> Receptáculo Uterino</div>
+            <div class="accordion-arrow" id="dor21-arrow">▼</div>
+          </div>
+          <div class="accordion-body" id="dor21-body">
+            <div class="accordion-body-inner">
+              <div class="grid-2">
+                <div><div class="small-label">DoR — Definition of Ready (para entrar)</div><ul class="styled"><li>Biomateriales e hidrogeles disponibles en laboratorio (no en pedido).</li><li>Parámetros fisiológicos de lagomorfos definidos y validados.</li><li>Modelo CAD revisado y aprobado por par.</li></ul></div>
+                <div><div class="small-label">DoD — Definition of Done (para salir)</div><ul class="styled"><li>Receptáculo bioimpreso con registro fotográfico e ID de lote.</li><li>Pruebas de estanqueidad superadas a presión nominal sin deformación.</li><li>Gate S1 aprobado y firmado.</li></ul></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAcc('dor22')">
+            <div class="accordion-title"><span class="tag tag-blue">2.2</span> Circuitos de Soporte Vital</div>
+            <div class="accordion-arrow" id="dor22-arrow">▼</div>
+          </div>
+          <div class="accordion-body" id="dor22-body">
+            <div class="accordion-body-inner">
+              <div class="grid-2">
+                <div><div class="small-label">DoR</div><ul class="styled"><li>Especificaciones de flujos de perfusión y rangos fisiológicos definidos.</li><li>Componentes electrónicos y mecánicos disponibles en laboratorio.</li><li>Gate S1 superado.</li></ul></div>
+                <div><div class="small-label">DoD</div><ul class="styled"><li>Circulación continua de fluido simulado durante 24hs sin pérdidas ni variaciones de presión superiores al 5% (Gate S2).</li><li>Transferencia gaseosa verificada dentro de rangos fisiológicos (Gate S3).</li><li>Remoción de residuos simulados por encima del umbral definido (Gate S4).</li><li>Fichas técnicas de cada módulo documentadas.</li></ul></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAcc('dor23')">
+            <div class="accordion-title"><span class="tag tag-orange">2.3</span> Electrónica y Control</div>
+            <div class="accordion-arrow" id="dor23-arrow">▼</div>
+          </div>
+          <div class="accordion-body" id="dor23-body">
+            <div class="accordion-body-inner">
+              <div class="grid-2">
+                <div><div class="small-label">DoR</div><ul class="styled"><li>Protocolo de variables a monitorear definido (presión, temperatura, pH, volumen).</li><li>Sensores físicamente disponibles.</li><li>Arquitectura del dashboard especificada.</li></ul></div>
+                <div><div class="small-label">DoD</div><ul class="styled"><li>Lectura simultánea estable de las 4 variables críticas.</li><li>Registro persistente de datos sin errores.</li><li>Gate S5 aprobado y firmado.</li></ul></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAcc('dor31')">
+            <div class="accordion-title"><span class="tag tag-red">3.1</span> Integración Mecánica y Electrónica</div>
+            <div class="accordion-arrow" id="dor31-arrow">▼</div>
+          </div>
+          <div class="accordion-body" id="dor31-body">
+            <div class="accordion-body-inner">
+              <div class="grid-2">
+                <div><div class="small-label">DoR</div><ul class="styled"><li>Gates S1 a S5 superados.</li><li>Todos los subsistemas físicamente disponibles para ensamblaje.</li><li>Protocolo de calibración escrito y firmado.</li></ul></div>
+                <div><div class="small-label">DoD</div><ul class="styled"><li>Prototipo ensamblado al 100%.</li><li>Lectura de sensores coherente en el dashboard.</li><li>Error de medición menor al 5%.</li><li>Gate S6 aprobado.</li></ul></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAcc('dor32')">
+            <div class="accordion-title"><span class="tag tag-gray">3.2</span> Protocolo de Pruebas de Sistema</div>
+            <div class="accordion-arrow" id="dor32-arrow">▼</div>
+          </div>
+          <div class="accordion-body" id="dor32-body">
+            <div class="accordion-body-inner">
+              <div class="grid-2">
+                <div><div class="small-label">DoR</div><ul class="styled"><li>Gate S6 superado.</li><li>Protocolos de ensayo firmados y equipos calibrados.</li><li>Prototipo integrado operativo.</li></ul></div>
+                <div><div class="small-label">DoD</div><ul class="styled"><li>Ensayos hidráulicos y térmicos dentro de rangos aceptables.</li><li>Simulación de 24hs completada sin paradas críticas.</li><li>Informe final redactado y aprobado.</li><li>Validación externa gestionada y entregada a tercero.</li></ul></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Cadencias Kanban</div>
+        <div class="card-subtitle">REUNIONES REGULARES CON PROPÓSITO ESPECÍFICO</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cadencia</th><th>Frecuencia</th><th>Propósito Principal</th><th>Participantes</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Daily Stand-up</strong></td><td>Diaria (15')</td><td>Recorrer el tablero de derecha a izquierda. ¿Hay bloqueos o WIPs rotos?</td><td>Equipo técnico completo</td></tr>
+              <tr><td><strong>Replenishment</strong></td><td>Semanal (30')</td><td>Priorizar el backlog. Decidir qué entra al flujo según capacidad.</td><td>Director + Dueños de subsistema</td></tr>
+              <tr><td><strong>Stage-Gate Review</strong></td><td>Bajo demanda</td><td>Validar que un subsistema supera su Gate específico (S1–S6).</td><td>Director + Owner + Sponsor</td></tr>
+              <tr><td><strong>Operations Review</strong></td><td>Quincenal (45')</td><td>Revisar métricas (Cycle Time, CFD) y ajustar WIP limits.</td><td>Director + Equipo</td></tr>
+              <tr><td><strong>Retrospectiva</strong></td><td>Mensual (60')</td><td>Mejora del sistema: ¿Las políticas funcionan? ¿Hay que cambiar columnas?</td><td>Equipo completo</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== STAGE GATES ========== -->
+    <div id="sec-gates" class="section">
+      <div class="section-heading">Stage-Gates</div>
+      <div class="section-desc">Los gates no interrumpen el flujo Kanban global; funcionan como criterios de Definition of Done formalizados para tareas críticas.</div>
+
+      <div class="info-box info-orange">
+        <strong>Stage-Gate 1 — Habilitación de la Ejecución</strong> (al finalizar Fase 1):<br>
+        Plan de gestión aprobado por el Sponsor · Presupuesto autorizado · Aprobaciones regulatorias y bioéticas obtenidas · Arquitectura funcional validada · Requisitos técnicos definidos para todos los subsistemas.
+      </div>
+
+      <div class="gate-item">
+        <div class="gate-badge" style="background:var(--accent)">S1</div>
+        <div>
+          <div class="gate-title">Gate S1 — Receptáculo Bioimpreso</div>
+          <div class="gate-criteria">Supera prueba de estanqueidad a presión nominal sin deformación estructural. Receptáculo bioimpreso con registro fotográfico e ID de lote. Pruebas de estanqueidad aprobadas. <em>Habilita inicio de subfase 2.2.</em></div>
+        </div>
+      </div>
+      <div class="gate-item">
+        <div class="gate-badge" style="background:var(--accent3)">S2</div>
+        <div>
+          <div class="gate-title">Gate S2 — Circuito de Bombeo</div>
+          <div class="gate-criteria">Circulación continua de fluido simulado durante 24 horas sin pérdidas ni variaciones de presión superiores al 5%.</div>
+        </div>
+      </div>
+      <div class="gate-item">
+        <div class="gate-badge" style="background:#7b3f00">S3</div>
+        <div>
+          <div class="gate-title">Gate S3 — Módulo de Oxigenación/Hematosis</div>
+          <div class="gate-criteria">Transferencia gaseosa verificada dentro de rangos fisiológicos objetivo (O₂ in / CO₂ out según parámetros de lagomorfos).</div>
+        </div>
+      </div>
+      <div class="gate-item">
+        <div class="gate-badge" style="background:#5a4a8a">S4</div>
+        <div>
+          <div class="gate-title">Gate S4 — Módulo de Diálisis</div>
+          <div class="gate-criteria">Remoción efectiva de residuos simulados por encima del umbral definido en los requisitos técnicos.</div>
+        </div>
+      </div>
+      <div class="gate-item">
+        <div class="gate-badge" style="background:var(--accent2)">S5</div>
+        <div>
+          <div class="gate-title">Gate S5 — Sistema de Sensores + Dashboard</div>
+          <div class="gate-criteria">Lectura simultánea estable de presión, temperatura, pH y volumen con registro persistente de datos en tiempo real. Sin errores en almacenamiento durante la prueba continua.</div>
+        </div>
+      </div>
+      <div class="gate-item">
+        <div class="gate-badge" style="background:#1a1916">S6</div>
+        <div>
+          <div class="gate-title">Gate S6 — Integración Final</div>
+          <div class="gate-criteria">Operación conjunta de TODOS los subsistemas durante una prueba continua de laboratorio (24 hs), con variables dentro de rangos aceptables y documentación técnica completa. Prototipo ensamblado al 100%, error de medición &lt;5%.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== RACI ========== -->
+    <div id="sec-raci" class="section">
+      <div class="section-heading">Matriz RACI</div>
+      <div class="section-desc">R = Responsable · A = Accountable · C = Consultado · I = Informado · Todas las tareas del proyecto.</div>
+
+      <div class="info-box info-green" style="margin-bottom:16px">
+        <strong>Nota sobre ownership Kanban:</strong> En el tablero Kanban, cada integrante es 'dueño' (owner) de las cards de su subsistema. El ownership implica responsabilidad sobre el avance de la card a través de las columnas, no exclusividad en la ejecución: el equipo puede colaborar cuando hay huecos de WIP disponibles.
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden">
+        <div class="raci-wrap">
+          <table class="raci-table">
+            <thead>
+              <tr>
+                <th style="min-width:60px; background:#1a1916; color:#f5f3ef">ID</th>
+                <th style="min-width:200px; background:#1a1916; color:#f5f3ef">Tarea</th>
+                <th title="Director PM — Bugs Bunny" style="background:#1a1916; color:#f5f3ef; min-width:44px">PM<br><span style="font-size:9px; opacity:0.6">Bugs</span></th>
+                <th title="Jefe de Ingeniería — Judy Hopps" style="background:#1a1916; color:#f5f3ef; min-width:44px">Jef.Ing<br><span style="font-size:9px; opacity:0.6">Judy</span></th>
+                <th title="Bioingeniero 1 — Belen Hornus" style="background:#1a1916; color:#f5f3ef; min-width:44px">Bio1<br><span style="font-size:9px; opacity:0.6">Belen</span></th>
+                <th title="Bioingeniero 2 — Mateo Anderson" style="background:#1a1916; color:#f5f3ef; min-width:44px">Bio2<br><span style="font-size:9px; opacity:0.6">Mateo</span></th>
+                <th title="Especialista en Materiales — Sr. Conejo" style="background:#1a1916; color:#f5f3ef; min-width:44px">Mater<br><span style="font-size:9px; opacity:0.6">Conejo</span></th>
+                <th title="Biotecnólogo — Roger Rabbit" style="background:#1a1916; color:#f5f3ef; min-width:44px">Biotech<br><span style="font-size:9px; opacity:0.6">Roger</span></th>
+                <th title="Técnico de Laboratorio — Snowball" style="background:#1a1916; color:#f5f3ef; min-width:44px">Tec.Lab<br><span style="font-size:9px; opacity:0.6">Snow</span></th>
+                <th title="Desarrolladora de Software — Lola Bunny" style="background:#1a1916; color:#f5f3ef; min-width:44px">SoftDev<br><span style="font-size:9px; opacity:0.6">Lola</span></th>
+                <th title="Diseñador Industrial — Fatu" style="background:#1a1916; color:#f5f3ef; min-width:44px">Dis.Ind<br><span style="font-size:9px; opacity:0.6">Fatu</span></th>
+                <th title="Lic. en Marketing — Peter Rabbit" style="background:#1a1916; color:#f5f3ef; min-width:44px">Mktg<br><span style="font-size:9px; opacity:0.6">Peter</span></th>
+                <th title="Gestora de Calidad — Sheila Riffel" style="background:#1a1916; color:#f5f3ef; min-width:44px">Calidad<br><span style="font-size:9px; opacity:0.6">Sheila</span></th>
+                <th title="Contador — Najin" style="background:#1a1916; color:#f5f3ef; min-width:44px">Conta<br><span style="font-size:9px; opacity:0.6">Najin</span></th>
+                <th title="Sponsor — Sudan" style="background:#1a1916; color:#f5f3ef; min-width:44px">Spon<br><span style="font-size:9px; opacity:0.6">Sudan</span></th>
+                <th title="Organismo Regulador — Nymeria Stark" style="background:#1a1916; color:#f5f3ef; min-width:44px">Reg<br><span style="font-size:9px; opacity:0.6">Nymeria</span></th>
+              </tr>
+            </thead>
+            <tbody id="raci-tbody">
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px; background:var(--surface2); display:flex; gap:20px; font-size:11px; border-top:1px solid var(--border)">
+          <span><span class="raci-r">R</span> Responsable</span>
+          <span><span class="raci-a">A</span> Accountable</span>
+          <span><span class="raci-c">C</span> Consultado</span>
+          <span><span class="raci-i">I</span> Informado</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== METRICS ========== -->
+    <div id="sec-metrics" class="section">
+      <div class="section-heading">Métricas de Flujo Kanban</div>
+      <div class="section-desc">En Kanban no se mide el avance por porcentaje completado ni por tareas planificadas vs. ejecutadas. Se mide el flujo.</div>
+
+      <div class="grid-2">
+        <div class="metric-box">
+          <div class="metric-title">1. CYCLE TIME</div>
+          <div class="metric-body">
+            <em>"Tiempo que tarda una card desde que entra a una columna hasta que la abandona."</em><br><br>
+            Se mide por columna y por tipo de tarea. Permite detectar cuellos de botella antes de que se conviertan en atrasos visibles.<br><br>
+            <strong>Referencia:</strong> Ver Tabla de Cycle Time por Columna (Documento 04/04).
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-title">2. THROUGHPUT</div>
+          <div class="metric-body">
+            <em>"Cantidad de cards que el equipo cierra por semana (llegan a Documentado)."</em><br><br>
+            Es el indicador más confiable para hacer predicciones de fecha de finalización. Se revisa en la Operations Review quincenal.<br><br>
+            Permite proyectar fechas de finalización de forma probabilística en lugar de usar fechas fijas.
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-title">3. LEAD TIME (Ley de Little)</div>
+          <div class="metric-body">
+            <em>"LT = WIP / Throughput"</em><br><br>
+            El lead time promedio de una card es igual al WIP total dividido por el throughput semanal.<br><br>
+            <strong>Consecuencia crítica:</strong> Si el WIP sube sin que suba el throughput, el tiempo de entrega crece proporcionalmente. Esto justifica los límites WIP establecidos.
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-title">4. CUMULATIVE FLOW DIAGRAM (CFD)</div>
+          <div class="metric-body">
+            <em>"Gráfico que acumula semana a semana la cantidad de cards en cada columna del tablero."</em><br><br>
+            Permite visualizar si hay acumulación (bandas que se ensanchan = cuello de botella) o si el flujo es saludable (bandas paralelas y delgadas).<br><br>
+            Se genera en cada Operations Review quincenal.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== RISKS ========== -->
+    <div id="sec-risks" class="section">
+      <div class="section-heading">Gestión de Riesgos</div>
+      <div class="section-desc">Registro inicial de riesgos técnicos, regulatorios, operativos y financieros del proyecto BioNest.</div>
+
+      <div class="card">
+        <div class="card-title">Riesgos Técnicos</div>
+        <div class="risk-item"><div class="risk-level risk-high">ALTO</div><div><strong>Fallo en bioimpresión del receptáculo:</strong> Los biomateriales e hidrogeles tienen alta probabilidad de requerir múltiples iteraciones antes de lograr una pieza con las propiedades mecánicas e hidráulicas requeridas. La bioimpresora podría presentar limitaciones en resolución o compatibilidad con los materiales seleccionados. <em>Mitigación: σ PERT 2.1.3 = 15,56 hs. DoR exige materiales en laboratorio antes de iniciar. WIP=2 permite que CAD avance en paralelo.</em></div></div>
+        <div class="risk-item"><div class="risk-level risk-high">ALTO</div><div><strong>Complejidad del sistema de hematosis artificial:</strong> Es la tarea con mayor esfuerzo del proyecto (TE=126 hs, σ=23,33 hs). La integración de oxigenadores de membrana para intercambio gaseoso O₂/CO₂ dentro de rangos fisiológicos es altamente experimental. <em>Mitigación: Gate S3 define criterio técnico preciso. Posibilidad de regreso a diseño sin replantear el plan global.</em></div></div>
+        <div class="risk-item"><div class="risk-level risk-medium">MEDIO</div><div><strong>Desviación en calibración de sensores:</strong> La integración simultánea de 4 sensores (presión, temperatura, pH, volumen) puede presentar interferencias electromagnéticas o ruido en lecturas. El error permitido es &lt;5%, lo que requiere calibración fina. <em>Mitigación: Gate S5 valida lectura simultánea estable antes de integración final.</em></div></div>
+        <div class="risk-item"><div class="risk-level risk-medium">MEDIO</div><div><strong>Fallo durante la prueba de 24hs:</strong> Una falla en cualquier subsistema durante la simulación de circulación continua podría invalidar el gate S6 y requerir regresión a etapas previas. <em>Mitigación: WIP=1 en Fase 3, validación secuencial estricta. Técnico de laboratorio monitorea continuamente.</em></div></div>
+        <div class="risk-item"><div class="risk-level risk-low">BAJO</div><div><strong>Incompatibilidad hardware-software:</strong> La comunicación entre la matriz de sensores y el dashboard puede presentar latencias o pérdidas de datos. <em>Mitigación: Gate S5 valida registro persistente sin errores. Validación de comunicación hardware-software es criterio de aceptación explícito.</em></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Riesgos Regulatorios y Bioéticos</div>
+        <div class="risk-item"><div class="risk-level risk-high">ALTO</div><div><strong>Demora en aprobación CICUAL:</strong> El trámite ante el Comité Institucional de Cuidado y Uso de Animales de Laboratorio (CICUAL) tiene una duración estimada de 30-45 días hábiles que no depende del equipo. Una demora adicional bloquea el inicio de la Fase 2 por ser un stage-gate crítico. <em>Mitigación: Se inicia el expediente en los primeros días de la subfase 1.2. La subfase 1.3 puede ejecutarse en paralelo.</em></div></div>
+        <div class="risk-item"><div class="risk-level risk-medium">MEDIO</div><div><strong>Observaciones del comité de ética:</strong> El expediente bioético puede requerir correcciones o información adicional por parte del comité institucional. <em>Mitigación: TE de revisión = 25,4 hs (σ=6,78). Se contempla iteración en la subfase 1.2.3.</em></div></div>
+        <div class="risk-item"><div class="risk-level risk-medium">MEDIO</div><div><strong>Marco normativo indefinido:</strong> No existe un marco regulatorio específico para sistemas de ectogénesis veterinaria en Argentina. El proyecto deberá adaptarse a normativas análogas (equipamiento médico-veterinario, IRAM/IEC). <em>Mitigación: La subfase 1.2.2 realiza análisis de implicancias y restricciones con revisión de especialistas legales/bioéticos.</em></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Riesgos Operativos y de Suministro</div>
+        <div class="risk-item"><div class="risk-level risk-high">ALTO</div><div><strong>Demora en entrega de biomateriales e insumos especializados:</strong> Los hidrogeles biocompatibles, oxigenadores de membrana y componentes electrónicos especializados son insumos de nicho con tiempos de entrega inciertos y proveedores limitados. <em>Mitigación: Tarea 1.1.6 (contratos con proveedores) se gestiona desde la Fase 1. DoR de 2.1 exige materiales en laboratorio antes de iniciar.</em></div></div>
+        <div class="risk-item"><div class="risk-level risk-medium">MEDIO</div><div><strong>Sobrecarga del equipo técnico:</strong> El proyecto involucra perfiles especializados con roles transversales en múltiples subsistemas. La concentración de expertise en pocas personas puede generar cuellos de botella. <em>Mitigación: WIP limits limitan la cantidad de trabajo simultáneo. El modelo de ownership Kanban distribuye responsabilidad sin exclusividad de ejecución.</em></div></div>
+        <div class="risk-item"><div class="risk-level risk-low">BAJO</div><div><strong>Pérdida de trazabilidad documental:</strong> La documentación técnica es crítica para la transferencia tecnológica y el modelo de licenciamiento. <em>Mitigación: Gestora de Calidad (Sheila Riffel) supervisa trazabilidad documental. Log de decisiones es una tarea explícita de la WBS (4.1.3).</em></div></div>
+      </div>
+    </div>
+
+    <!-- ========== BIBLIOGRAPHY ========== -->
+    <div id="sec-bibliography" class="section">
+      <div class="section-heading">Bibliografía & Contexto Científico</div>
+      <div class="section-desc">Antecedentes técnicos que fundamentan la viabilidad del sistema BioNest.</div>
+
+      <div class="card">
+        <div class="card-title">1. Soporte para Neonatos Prematuros Extremos (Ectogénesis Parcial)</div>
+        <div class="card-subtitle">ANTECEDENTES DE SISTEMAS DE SOPORTE VITAL EXTRACORPÓREO</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-item-title">Biobag (2017) — Children's Hospital of Philadelphia (CHOP)</div>
+            <div class="timeline-item-date">Alan Flake et al. · Nature Communications · 2017</div>
+            <div class="timeline-item-body">Crearon una bolsa llena de líquido amniótico artificial conectada a un oxigenador sin bomba (el propio corazón del feto bombeaba la sangre). Lograron mantener corderos prematuros vivos y en desarrollo durante cuatro semanas. <strong>Relevancia para BioNest:</strong> Validación de la viabilidad de un entorno líquido cerrado como soporte vital extracorpóreo.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot orange"></div>
+            <div class="timeline-item-title">Sistema EXTEND — Evolución directa del Biobag</div>
+            <div class="timeline-item-date">En conversaciones con FDA para primeros ensayos clínicos en humanos</div>
+            <div class="timeline-item-body">Actualmente el equipo de Alan Flake está en conversaciones con la FDA (la agencia reguladora de EE. UU.) para iniciar los primeros ensayos clínicos en humanos. Representa la transición del concepto al uso médico-veterinario regulado.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot blue"></div>
+            <div class="timeline-item-title">Terapia EVE — Ex Vivo Uterine Environment</div>
+            <div class="timeline-item-date">Matt Kemp et al. · Australia y Japón · 2017 y 2019</div>
+            <div class="timeline-item-body">Investigadores en Australia y Japón publicaron estudios sobre sistemas similares de soporte vital extracorpóreo, también probados en ovejas, enfocándose en evitar el daño pulmonar y cerebral de los prematuros. <strong>Relevancia para BioNest:</strong> Validación en grandes mamíferos, análogos al rinoceronte blanco como especie objetivo.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">2. Desarrollo Embrionario Temprano (Enfoque In Vitro Avanzado)</div>
+        <div class="card-subtitle">CULTIVO DE EMBRIONES Y ÚTEROS ARTIFICIALES</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-item-title">Embriones de Ratón en Frascos (2021 y 2022)</div>
+            <div class="timeline-item-date">Jacob Hanna et al. · Instituto Weizmann de Ciencias (Israel) · Nature y Cell</div>
+            <div class="timeline-item-body">Lograron cultivar embriones de ratón fuera del útero materno durante varios días (lo que equivale a meses en humanos). Lograron que los embriones desarrollaran un corazón latiendo, sistema nervioso y órganos, todo dentro de cilindros rotativos que controlaban los nutrientes y los gases de forma exacta. <strong>Relevancia para BioNest:</strong> Validación del principio de control automatizado de nutrientes y gases como factor determinante del desarrollo embrionario ex útero.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot orange"></div>
+            <div class="timeline-item-title">Modelos de Embriones Sintéticos</div>
+            <div class="timeline-item-date">Magdalena Zernicka-Goetz et al. · Universidad de Cambridge · Weizmann · Reciente</div>
+            <div class="timeline-item-body">Equipos en Cambridge y el propio Instituto Weizmann han creado estructuras similares a embriones a partir de células madre, sin necesidad de óvulos ni espermatozoides, y los han hecho crecer en úteros artificiales por tiempos cortos. <strong>Relevancia para BioNest:</strong> Demuestra la convergencia científica hacia el útero artificial como plataforma experimental para biología del desarrollo.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Especie Objetivo: Rinoceronte Blanco del Norte</div>
+        <div class="card-subtitle"><em>Ceratotherium simum cottoni</em> — CASO CRÍTICO DE CONSERVACIÓN</div>
+        <div class="body-text">
+          El rinoceronte blanco del norte fue elegido como caso de referencia (inspiración) del proyecto dado la criticidad de sus condiciones reproductivas actuales. Es una de las especies más amenazadas del planeta, con reproducción natural prácticamente imposible con los pocos individuos vivos restantes.<br><br>
+          <strong>Especie de validación del sistema:</strong> <em>Oryctolagus cuniculus</em> (lagomorfo/conejo). Elegida por:
+        </div>
+        <div class="grid-2" style="margin-top:12px">
+          <div class="info-box info-green"><strong>Ciclo de gestación rápido:</strong> ~31 días, lo que permite ciclos de validación cortos y verificación de resultados en tiempo real del proyecto.</div>
+          <div class="info-box info-blue"><strong>Documentación bibliográfica:</strong> Amplia literatura científica disponible sobre parámetros fisiológicos de referencia (presión, temperatura, pH, flujos sanguíneos).</div>
+          <div class="info-box info-orange"><strong>Viabilidad ética y regulatoria:</strong> Protocolos ya aprobados (CICUAL) que aceleran significativamente la obtención de autorizaciones para la fase experimental.</div>
+          <div class="info-box info-green"><strong>Relación costo-eficiencia:</strong> Permite demostrar viabilidad técnica del prototipo antes de comprometer inversiones mayores en especies de mayor tamaño o complejidad.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+// NAV
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  const titles = {
+    overview: 'Resumen Ejecutivo',
+    scope: 'Alcance del Proyecto',
+    stakeholders: 'Stakeholders',
+    team: 'Equipo del Proyecto',
+    lifecycle: 'Ciclo de Vida',
+    wbs: 'WBS Completa',
+    roadmap: 'Roadmap',
+    pert: 'Estimaciones PERT',
+    kanban: 'Kanban & WIP Limits',
+    gates: 'Stage-Gates',
+    raci: 'Matriz RACI',
+    metrics: 'Métricas Kanban',
+    risks: 'Gestión de Riesgos',
+    bibliography: 'Bibliografía & Contexto'
+  };
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+}
+
+// WBS TOGGLE
+function toggleWbs(id) {
+  const body = document.getElementById(id + '-body');
+  const arrow = document.getElementById(id + '-arrow');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open');
+  arrow.textContent = isOpen ? '▼' : '▲';
+}
+
+// ACCORDION TOGGLE
+function toggleAcc(id) {
+  const body = document.getElementById(id + '-body');
+  const arrow = document.getElementById(id + '-arrow');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open');
+  if(arrow) arrow.textContent = isOpen ? '▼' : '▲';
+  const header = body.previousElementSibling;
+  header.classList.toggle('open', !isOpen);
+  const arrowEl = header.querySelector('.accordion-arrow');
+  if(arrowEl) arrowEl.classList.toggle('open', !isOpen);
+}
+
+// PERT DATA
+const pertData = [
+  {phase: '1.1 — Gestión del Proyecto', tasks: [
+    {id:'1.1.1', name:'Redactar Acta de Constitución', o:5.3, m:9.3, p:16.7, te:9.9, sigma:1.89, var:3.57, risk:'Doc formal ~5 pág: objetivos, alcance, sponsor, autoridad PM, exclusiones bioéticas'},
+    {id:'1.1.2', name:'Elaborar Plan de Gestión del Proyecto', o:18.7, m:32.0, p:57.3, te:34.0, sigma:6.44, var:41.53, risk:'Doc maestro: alcance + cronograma + costos + calidad + riesgos + comunicaciones. Proyecto ~15 meses', high:true},
+    {id:'1.1.3', name:'Registrar y definir estrategia de Stakeholders', o:5.3, m:10.7, p:17.3, te:10.9, sigma:2.00, var:4.00, risk:'~6 stakeholders: BioTech, Conservación, Ética, Proveedores, equipo interno. Matriz poder/interés'},
+    {id:'1.1.4', name:'Identificar riesgos iniciales', o:6.7, m:14.7, p:26.7, te:15.3, sigma:3.33, var:11.11, risk:'Riesgos técnicos (bioimpresión, sensores) + regulatorios (ética, IRAM) + financieros + bioseguridad'},
+    {id:'1.1.5', name:'Diagramar presupuesto', o:10.0, m:18.7, p:34.7, te:19.9, sigma:4.11, var:16.90, risk:'Costear biomateriales + electrónica + bioimpresión + horas lab + personal. Ítems nicho especializados'},
+    {id:'1.1.6', name:'Gestionar contratos con proveedores', o:18.7, m:37.3, p:70.7, te:39.8, sigma:8.67, var:75.11, risk:'TERCERIZADA GRANDE: múltiples proveedores (hidrogeles, sensores, bomba, oxigenador). Búsqueda + cotización + revisión técnica/legal', high:true},
+    {id:'1.1.7', name:'Realizar reunión de Kick Off', o:2.7, m:4.7, p:8.7, te:5.0, sigma:1.00, var:1.00, risk:'Prep (~2hs) + coordinar asistentes + reunión (2-3hs) + minuta. Tarea puntual'},
+  ]},
+  {phase: '1.2 — Expediente Bioético y Normativo', tasks: [
+    {id:'1.2.1', name:'Elaborar documentación para Comité de Ética Institucional', o:21.3, m:40.0, p:80.0, te:43.6, sigma:9.78, var:95.60, risk:'Expediente formal: protocolo experimental, consideraciones bioéticas, restricciones de uso para ectogénesis. Doc pesado y sensible', high:true},
+    {id:'1.2.2', name:'Analizar implicancias y restricciones de uso', o:14.7, m:26.7, p:49.3, te:28.4, sigma:5.78, var:33.38, risk:'Investigación legal/bioética (normativa Arg + internacional), evaluación restricciones, marco regulatorio'},
+    {id:'1.2.3', name:'Ejecutar etapa de revisión', o:10.7, m:22.7, p:51.3, te:25.4, sigma:6.78, var:45.94, risk:'Revisiones internas del expediente + ajustes + iteraciones antes de envío externo'},
+    {id:'1.2.4', name:'Enviar documentación al organismo de ética', o:1.7, m:5.3, p:10.3, te:5.6, sigma:1.44, var:2.09, risk:'Preparar docs + validar + enviar. Grueso: responder observaciones'},
+    {id:'1.2.5', name:'⬡ HITO: Obtención aprobación CICUAL', o:0, m:0, p:0, te:0, sigma:0, var:0, risk:'HITO DE AVANCE — sin esfuerzo estimable. Duración del trámite (~30-45 días) afecta cronograma', hito:true},
+  ]},
+  {phase: '1.3 — Definición Técnica de Subsistemas', tasks: [
+    {id:'1.3.1', name:'Especificaciones parámetros fisiológicos (Lagomorfos)', o:18.7, m:36.0, p:62.7, te:37.6, sigma:7.33, var:53.78, risk:'Investigar fisiología O. cuniculus: presión, temperatura, pH, flujos sanguíneos. Rangos objetivo + validación bibliográfica'},
+    {id:'1.3.2', name:'Elaborar matriz de escalabilidad', o:11.3, m:19.3, p:34.7, te:20.6, sigma:3.89, var:15.12, risk:'Tabla S/M/L especies + fórmulas de conversión paramétrica. Trabajo matemático + validación 3 categorías'},
+    {id:'1.3.3', name:'Diseñar arquitectura funcional del sistema', o:21.3, m:40.0, p:77.3, te:43.1, sigma:9.33, var:87.11, risk:'Arquitectura modular completa: diagrama de bloques, subsistemas identificados, interfaces. Mayor peso conceptual', high:true},
+    {id:'1.3.4', name:'Elaborar diagramas de flujo del sistema (P&ID)', o:12.0, m:23.3, p:42.7, te:24.7, sigma:5.11, var:26.12, risk:'Diagramas P&ID: circulación, oxigenación, diálisis, inyección nutrientes. Validación lógica + correcciones'},
+  ]},
+  {phase: '2.1 — Receptáculo Uterino', tasks: [
+    {id:'2.1.1', name:'Comprar materiales a proveedores (tercerizada)', o:8.0, m:18.0, p:40.0, te:20.0, sigma:5.33, var:28.44, risk:'TERCERIZADA: solo esfuerzo admin propio (cotizar, validar specs, coordinar entrega). Espera proveedor ≠ esfuerzo'},
+    {id:'2.1.2', name:'Modelar CAD del habitáculo uterino', o:32.0, m:56.0, p:96.0, te:58.7, sigma:10.67, var:113.78, risk:'Diseño 3D receptáculo escala lagomorfa (200-400ml). Múltiples iteraciones diseño + revisión técnica', high:true},
+    {id:'2.1.3', name:'Bioimprimir receptáculo con hidrogeles/biomateriales', o:46.7, m:91.7, p:140.0, te:92.2, sigma:15.56, var:241.98, risk:'ALTO RIESGO TÉCNICO: preparar biomateriales + calibrar impresora + imprimir + probar + iterar. Alta probabilidad de fallas/reintentos', high:true},
+    {id:'2.1.4', name:'Pruebas de estanqueidad y resistencia a presión', o:16.7, m:33.3, p:66.0, te:36.0, sigma:8.22, var:67.60, risk:'Configurar banco ensayo + medir a presión nominal + corregir fugas + repetir. Validación Stage-Gate S1'},
+  ]},
+  {phase: '2.2 — Circuitos de Soporte Vital', tasks: [
+    {id:'2.2.1', name:'Diseñar y ensamblar módulo de bombeo (corazón artificial)', o:49.3, m:84.0, p:145.3, te:88.4, sigma:16.00, var:256.00, risk:'Bomba peristáltica como corazón artificial: diseño circuito cerrado + ensamblaje + pruebas circulación 24hs + ajustes. SG-S2', high:true},
+    {id:'2.2.2', name:'Desarrollar sistema de hematosis artificial', o:68.0, m:120.0, p:208.0, te:126.0, sigma:23.33, var:544.44, risk:'TAREA MÁS COMPLEJA: investigar oxigenadores de membrana + integrar O₂/CO₂ + ensayos transferencia gaseosa + recalibración. SG-S3', high:true},
+    {id:'2.2.3', name:'Integrar módulo de filtrado y diálisis', o:38.7, m:66.7, p:118.0, te:70.6, sigma:13.22, var:174.83, risk:'Remoción desechos metabólicos simulados: integrar componentes + probar flujo + ajustar umbral. SG-S4'},
+    {id:'2.2.4', name:'Desarrollar sistema de inyección', o:19.3, m:36.7, p:66.7, te:38.8, sigma:7.89, var:62.23, risk:'Bomba infusión controlada para simulación nutrientes/hormonas. Menos complejo que bombeo/hematosis. Validar flujo regulable'},
+  ]},
+  {phase: '2.3 — Electrónica y Control', tasks: [
+    {id:'2.3.1', name:'Integrar matriz de sensores (P, T, pH, Vol)', o:34.0, m:62.0, p:110.0, te:65.3, sigma:12.67, var:160.44, risk:'4 sensores funcionando simultáneamente integrados al receptáculo. Selección + montaje + verificación lectura'},
+    {id:'2.3.2', name:'Desarrollar interfaz de usuario (Dashboard)', o:44.0, m:86.0, p:135.3, te:87.2, sigma:15.22, var:231.72, risk:'UI tiempo real: 4 variables críticas + alarmas + gráficos históricos. Debe funcionar sin crashes en prueba 24hs continuas', high:true},
+    {id:'2.3.3', name:'Desarrollar módulo de estimulación', o:20.0, m:37.3, p:66.7, te:39.3, sigma:7.78, var:60.49, risk:'Sistema presión mecánica + emisión acústica en habitáculo. Menos crítico que los otros módulos'},
+    {id:'2.3.4', name:'Implementar sistema de almacenamiento y registro', o:23.3, m:43.3, p:78.0, te:45.8, sigma:9.11, var:83.01, risk:'BD persistente para datos experimentales. Registro sin pérdidas 24hs (SG-S5). Menos complejo que Dashboard'},
+  ]},
+  {phase: '3.1 — Integración Mecánica y Electrónica', tasks: [
+    {id:'3.1.1', name:'Ensamblar prototipo físico completo', o:36.7, m:64.7, p:113.3, te:68.1, sigma:12.78, var:163.27, risk:'Integración mecánica de TODOS los subsistemas (receptáculo + bombeo + hematosis + diálisis + sensores). Depende de que todo esté listo', high:true},
+    {id:'3.1.2', name:'Acoplar sensores al Dashboard', o:16.0, m:33.3, p:64.0, te:35.6, sigma:8.00, var:64.00, risk:'Conexión eléctrica + calibración sensores-software. Lectura coherente de 4 variables en Dashboard'},
+    {id:'3.1.3', name:'Calibrar sistema completo', o:24.0, m:46.7, p:88.7, te:49.9, sigma:10.78, var:116.16, risk:'Ajuste fino de parámetros a rangos fisiológicos lagomorfos (±5%). Iterativo hasta estabilizar'},
+  ]},
+  {phase: '3.2 — Protocolo de Pruebas de Sistema', tasks: [
+    {id:'3.2.1', name:'Ejecutar ensayos hidráulicos integrados', o:16.0, m:32.0, p:58.0, te:33.7, sigma:7.00, var:49.00, risk:'Pruebas circulación + presión + estanqueidad del sistema integrado completo. Protocolo + ejecución'},
+    {id:'3.2.2', name:'Ejecutar ensayos térmicos integrados', o:13.3, m:28.0, p:57.3, te:30.4, sigma:7.33, var:53.78, risk:'Validar control temperatura 37-38°C (lagomorfos). Estabilidad ±0.5°C'},
+    {id:'3.2.3', name:'Realizar simulación circulación continua 24hs', o:24.0, m:41.3, p:68.7, te:43.0, sigma:7.44, var:55.42, risk:'Operación continua todos los subsistemas con monitoreo. SG-S6. Incluye supervisión durante las 24hs'},
+    {id:'3.2.4', name:'Redactar informe final de resultados y conclusiones', o:20.0, m:38.7, p:69.3, te:40.7, sigma:8.22, var:67.60, risk:'Conclusiones + desviaciones + recomendaciones. Documento formal con análisis de datos recopilados'},
+    {id:'3.2.5', name:'Entrega a tercero para control de calidad (validación normativa)', o:4.0, m:8.0, p:14.7, te:8.4, sigma:1.78, var:3.16, risk:'TERCERIZADA: solo esfuerzo admin (preparar envío + coordinar + recibir). Espera del tercero ≠ esfuerzo'},
+    {id:'3.2.6', name:'⬡ HITO: Obtención aprobación control de calidad', o:0, m:0, p:0, te:0, sigma:0, var:0, risk:'HITO DE AVANCE', hito:true},
+  ]},
+  {phase: '4.1 — Documentación Técnica "As-Built"', tasks: [
+    {id:'4.1.1', name:'Actualizar planos finales As-Built', o:12.0, m:22.7, p:40.0, te:23.8, sigma:4.67, var:21.78, risk:'Planos CAD actualizados reflejando modificaciones reales del prototipo. Versionar finales'},
+    {id:'4.1.2', name:'Elaborar fichas técnicas', o:11.3, m:21.3, p:37.3, te:22.3, sigma:4.33, var:18.78, risk:'Specs de biomateriales + componentes electrónicos + parámetros operativos. Archivar'},
+    {id:'4.1.3', name:'Compilar log de decisiones', o:7.3, m:12.7, p:23.3, te:13.6, sigma:2.67, var:7.11, risk:'Compilar registro existente de cambios de diseño + justificaciones + lecciones aprendidas. Trazable'},
+    {id:'4.1.4', name:'Redactar manual de usuario', o:19.3, m:34.0, p:60.0, te:35.9, sigma:6.78, var:45.94, risk:'Manual de operación del sistema completo: puesta en marcha, monitoreo, mantenimiento, troubleshooting'},
+  ]},
+  {phase: '4.2 — Marketing y Licenciamiento', tasks: [
+    {id:'4.2.1', name:'Realizar reunión de cierre', o:2.7, m:5.3, p:8.7, te:5.4, sigma:1.00, var:1.00, risk:'Prep + reunión con sponsor/equipo + acta de cierre. Lecciones aprendidas'},
+    {id:'4.2.2', name:'Ejecutar presentación final a Institución de Conservación', o:13.3, m:18.7, p:24.0, te:18.7, sigma:1.78, var:3.16, risk:'Demo en vivo del prototipo + pitch deck + one-pager. Preparación materiales + ensayo + presentación'},
+  ]},
+];
+
+function buildPert() {
+  const tbody = document.getElementById('pert-tbody');
+  pertData.forEach(phase => {
+    const pr = document.createElement('tr');
+    pr.innerHTML = `<td colspan="9" style="background:var(--surface2); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); padding:8px 14px; font-family:'DM Mono',monospace;">${phase.phase}</td>`;
+    tbody.appendChild(pr);
+    phase.tasks.forEach(t => {
+      const tr = document.createElement('tr');
+      if(t.hito) {
+        tr.style.background = 'var(--accent3-light)';
+        tr.innerHTML = `
+          <td class="task-id" style="color:var(--accent3)">${t.id}</td>
+          <td class="task-name" style="color:var(--accent3); font-style:italic">${t.name}</td>
+          <td colspan="5" style="text-align:center; color:var(--accent3); font-family:'DM Mono',monospace; font-size:11px; background:var(--accent3-light)">HITO — sin esfuerzo estimable</td>
+          <td class="pert-value" style="color:var(--accent3)">${t.risk}</td>
+        `;
+      } else {
+        const teClass = t.te > 80 ? 'pert-value pert-high' : t.te > 40 ? 'pert-value pert-med' : 'pert-value';
+        tr.innerHTML = `
+          <td class="task-id">${t.id}</td>
+          <td class="task-name">${t.name}</td>
+          <td class="pert-value">${t.o}</td>
+          <td class="pert-value">${t.m}</td>
+          <td class="pert-value">${t.p}</td>
+          <td class="${teClass}">${t.te}</td>
+          <td class="pert-value">${t.sigma}</td>
+          <td class="pert-value">${t.var}</td>
+          <td style="font-size:11px; text-align:left; padding:7px 10px; color:var(--text-muted)">${t.risk}</td>
+        `;
+      }
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+// RACI DATA
+const raciData = [
+  {phase: '1.1 Gestión del Proyecto'},
+  {id:'1.1.1', name:'Redactar acta de constitución', v:['R','-','-','-','-','-','-','-','-','I','C','I','A','-']},
+  {id:'1.1.2', name:'Plan de gestión del proyecto', v:['R','C','-','-','-','-','-','-','-','I','A','-','-','-']},
+  {id:'1.1.3', name:'Identificar stakeholders', v:['R','C','-','-','-','-','-','-','-','-','A','-','-','-']},
+  {id:'1.1.4', name:'Registro de riesgos inicial', v:['R','C','I','I','I','I','I','I','I','-','A','-','-','-']},
+  {id:'1.1.5', name:'Diagramar presupuesto [PM+Contador]', v:['A','I','-','-','-','-','-','-','-','-','-','R','-','-']},
+  {id:'1.1.6', name:'Gestionar contratos con proveedores', v:['A','I','-','-','C','-','-','-','-','I','-','R','-','-']},
+  {id:'1.1.7', name:'Reunión de Kick Off', v:['R','-','-','-','-','-','-','-','-','-','-','-','A','-']},
+  {phase: '1.2 Expediente Bioético y Normativo'},
+  {id:'1.2.1', name:'Documentación comité de ética', v:['A','-','-','-','-','R','-','-','-','-','C','-','-','-']},
+  {id:'1.2.2', name:'Analizar implicancias de uso', v:['-','I','C','C','C','R','-','-','-','-','A','-','-','-']},
+  {id:'1.2.3', name:'Revisar documentación institucional', v:['A','-','-','-','-','-','-','-','-','-','R','-','-','-']},
+  {id:'1.2.4', name:'Enviar documentación al organismo', v:['R','-','-','-','-','-','-','-','-','-','A','-','-','-']},
+  {id:'1.2.4b', name:'Aprobación seguridad eléctrica (IRAM/IEC)', v:['-','-','-','-','-','-','-','-','-','-','-','-','-','A']},
+  {id:'1.2.5', name:'⬡ HITO: Aprobación ética CICUAL', v:['-','-','-','-','-','-','-','-','-','-','-','-','-','A']},
+  {phase: '1.3 Definición Técnica de Subsistemas'},
+  {id:'1.3.1', name:'Definir parámetros fisiológicos de referencia', v:['-','A','C','C','C','R','I','-','-','-','-','-','-','-']},
+  {id:'1.3.2', name:'Elaborar matriz de escalabilidad', v:['-','A','R','I','C','-','-','-','-','-','-','-','-','-']},
+  {id:'1.3.3', name:'Diseñar arquitectura funcional', v:['-','A','R','I','I','-','-','I','C','-','-','-','-','-']},
+  {id:'1.3.4', name:'Elaborar diagramas de flujo del sistema (P&ID)', v:['-','I','A','C','C','-','-','-','R','-','-','-','-','-']},
+  {phase: '2.1 Receptáculo Uterino'},
+  {id:'2.1.1', name:'Comprar materiales tercerizados', v:['A','-','-','-','C','-','-','-','-','-','C','R','-','-']},
+  {id:'2.1.2', name:'Diseñar modelo CAD del habitáculo', v:['-','I','A','I','I','C','-','I','R','-','I','-','-','-']},
+  {id:'2.1.3', name:'Bioimprimir receptáculo (hidrogeles)', v:['-','I','I','I','R','A','I','I','-','-','C','-','-','-']},
+  {id:'2.1.4', name:'Pruebas de estanqueidad y presión', v:['-','I','I','A','I','I','R','-','-','-','C','-','-','-']},
+  {phase: '2.2 Circuitos de Soporte Vital'},
+  {id:'2.2.1', name:'Diseñar módulo de bombeo', v:['-','A','R','C','I','-','-','-','C','-','-','-','-','-']},
+  {id:'2.2.2', name:'Diseñar sistema de hematosis artificial', v:['-','A','C','R','C','-','-','-','C','-','-','-','-','-']},
+  {id:'2.2.3', name:'Diseñar módulo de filtrado y diálisis', v:['-','A','R','C','C','-','-','-','C','-','-','-','-','-']},
+  {id:'2.2.4', name:'Diseñar sistema de inyección', v:['-','A','C','R','C','C','-','-','C','-','-','-','-','-']},
+  {phase: '2.3 Electrónica y Control'},
+  {id:'2.3.1', name:'Integrar matriz de sensores', v:['-','A','C','R','-','-','I','C','-','-','-','-','-','-']},
+  {id:'2.3.2', name:'Desarrollar dashboard', v:['-','A','C','C','-','-','I','R','-','-','-','-','-','-']},
+  {id:'2.3.3', name:'Desarrollar módulo de estimulación', v:['-','A','R','C','C','C','I','I','C','-','-','-','-','-']},
+  {id:'2.3.4', name:'Sistema de almacenamiento de datos', v:['-','A','-','-','-','-','-','R','-','-','-','-','-','-']},
+  {phase: '3.1 Integración Mecánica y Electrónica'},
+  {id:'3.1.1', name:'Ensamblar prototipo físico completo', v:['-','A','C','R','-','-','I','-','C','I','-','-','-','-']},
+  {id:'3.1.2', name:'Integrar sensores al dashboard', v:['-','A','R','C','-','-','I','C','-','-','-','-','-','-']},
+  {id:'3.1.3', name:'Calibrar parámetros fisiológicos', v:['-','A','C','R','C','C','I','-','-','-','C','-','-','-']},
+  {phase: '3.2 Protocolo de Pruebas de Sistema'},
+  {id:'3.2.1', name:'Ensayos hidráulicos integrados', v:['-','I','A','C','-','-','R','-','-','-','-','-','-','-']},
+  {id:'3.2.2', name:'Ensayos térmicos integrados', v:['-','I','C','A','-','-','R','-','-','-','-','-','-','-']},
+  {id:'3.2.3', name:'Simulación de circulación continua (24hs)', v:['-','I','A','C','-','-','R','-','-','-','I','-','-','-']},
+  {id:'3.2.4', name:'Informe final de resultados', v:['I','I','I','A','I','I','R','-','-','-','I','-','-','-']},
+  {id:'3.2.5', name:'Gestionar validación externa (QA)', v:['R','-','-','-','-','-','-','-','-','-','A','C','-','-']},
+  {phase: '4.1 Documentación Técnica "As-Built"'},
+  {id:'4.1.1', name:'Actualizar planos finales', v:['I','A','C','C','-','-','-','-','R','-','C','-','-','-']},
+  {id:'4.1.2', name:'Elaborar fichas técnicas', v:['I','A','C','C','R','-','C','C','-','-','C','-','-','-']},
+  {id:'4.1.3', name:'Consolidar log de decisiones', v:['R','C','C','C','C','-','-','C','C','-','A','-','-','-']},
+  {id:'4.1.4', name:'Elaborar manual de usuario', v:['C','R','C','C','-','-','-','C','-','-','A','-','-','-']},
+  {phase: '4.2 Marketing y Licenciamiento'},
+  {id:'4.2.1', name:'Reunión de cierre', v:['R','-','-','-','-','-','-','-','-','-','-','-','A','-']},
+  {id:'4.2.2', name:'Presentación final a la Institución de Conservación', v:['R','-','-','-','-','-','-','-','-','C','-','-','A','-']},
+];
+
+function renderRaciCell(v) {
+  if (!v || v === '-') return '<span style="color:var(--border)">—</span>';
+  if (v === 'R') return '<span class="raci-r">R</span>';
+  if (v === 'A') return '<span class="raci-a">A</span>';
+  if (v === 'C') return '<span class="raci-c">C</span>';
+  if (v === 'I') return '<span class="raci-i">I</span>';
+  return v;
+}
+
+function buildRaci() {
+  const tbody = document.getElementById('raci-tbody');
+  raciData.forEach(row => {
+    const tr = document.createElement('tr');
+    if (row.phase) {
+      tr.className = 'phase-row';
+      tr.innerHTML = `<td colspan="16">${row.phase}</td>`;
+    } else {
+      const isHito = row.name.includes('HITO');
+      tr.style.background = isHito ? 'var(--accent3-light)' : '';
+      tr.innerHTML = `
+        <td class="task-id" style="${isHito ? 'color:var(--accent3)' : ''}">${row.id}</td>
+        <td class="task-name" style="${isHito ? 'color:var(--accent3); font-style:italic' : ''}">${row.name}</td>
+        ${row.v.map(v => `<td>${renderRaciCell(v)}</td>`).join('')}
+      `;
+    }
+    tbody.appendChild(tr);
+  });
+}
+
+buildPert();
+buildRaci();
+</script>
+</body>
+</html>
