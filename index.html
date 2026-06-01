@@ -367,6 +367,14 @@
     font-weight: 700;
     font-size: 15px;
     margin-bottom: 10px;
+    overflow: hidden;         /* ← NUEVO: Recorta la foto en forma de círculo */
+  }
+
+  /* NUEVO: Hace que la imagen ocupe el 100% del círculo sin estirarse */
+  .team-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .team-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
   .team-role { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
@@ -919,7 +927,9 @@
           <div class="team-resp">Planificación, coordinación y control integral del proyecto. Gestión del ciclo de vida híbrido, conducción de Stage-Gates y reuniones de seguimiento, administración del cronograma, presupuesto, riesgos y comunicaciones. Nexo entre el sponsor, el cliente, los organismos externos y el equipo técnico. Supervisión del cumplimiento de los objetivos y toma de decisiones de escalamiento ante desvíos o bloqueos críticos.</div>
         </div>
         <div class="team-card">
-          <div class="team-avatar" style="background:var(--accent3)">JH</div>
+          <div class="team-avatar">
+            <img src="img/judyhopps.png" alt="Foto de Judy Hopps">
+          </div>
           <div class="team-name">Judy Hopps</div>
           <div class="team-role">Jefe de Ingeniería</div>
           <div class="team-resp">Dirección técnica global del proyecto. Coordina las actividades de los distintos subsistemas de ingeniería (receptáculo, soporte vital, electrónica, software e integración), validación de diseños y decisiones técnicas, aprobación de entregables de ingeniería y asegura la coherencia de la arquitectura funcional del sistema. Supervisión de la integración de subsistemas y verificación del cumplimiento de los criterios técnicos para cada Stage-Gate.</div>
