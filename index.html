@@ -2340,27 +2340,31 @@ function buildRaci() {
 buildPert();
 buildRaci();
 <script>
-  // 1. LÓGICA ORIGINAL: Cambiar entre pestañas (Corregida)
+  // 1. FUNCIÓN PARA CAMBIAR ENTRE PESTAÑAS
   function showSection(sectionId, title) {
-    // Ocultar todas las secciones
+    // Ocultar todas las secciones del panel
     document.querySelectorAll('.section').forEach(sec => {
       sec.classList.remove('active');
     });
-    // Mostrar la sección seleccionada
+    
+    // Mostrar la sección que el usuario seleccionó
     const targetSection = document.getElementById(sectionId);
     if (targetSection) {
       targetSection.classList.add('active');
     }
     
-    // Cambiar el título de la barra superior
-    document.getElementById('topbar-title').innerText = title;
+    // Cambiar el título de la barra superior dinámicamente
+    const topbarTitle = document.getElementById('topbar-title');
+    if (topbarTitle) {
+      topbarTitle.innerText = title;
+    }
     
-    // Cambiar el estado activo en el menú lateral
+    // Quitar el estado activo de los botones del menú lateral
     document.querySelectorAll('.sidebar-menu a').forEach(link => {
       link.classList.remove('active');
     });
     
-    // Marcar como activo el elemento clickeado
+    // Buscar el botón del menú que se clickeó y activarlo visualmente
     const activeLink = Array.from(document.querySelectorAll('.sidebar-menu a')).find(link => 
       link.getAttribute('onclick') && link.getAttribute('onclick').includes(sectionId)
     );
@@ -2369,10 +2373,16 @@ buildRaci();
     }
   }
 
-  // 2. NUEVA LÓGICA: Ocultar / Mostrar la Barra Lateral
-  document.getElementById('toggleSidebar').addEventListener('click', function() {
-    const isHidden = document.body.classList.toggle('sidebar-hidden');
-    this.innerText = isHidden ? "📁 Mostrar Menú" : "📁 Ocultar Menú";
+  // 2. FUNCIÓN PARA OCULTAR / MOSTRAR LA BARRA LATERAL
+  // Nos aseguramos de que el código se ejecute cuando el botón ya exista en pantalla
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('toggleSidebar');
+    if (toggleButton) {
+      toggleButton.addEventListener('click', function() {
+        const isHidden = document.body.classList.toggle('sidebar-hidden');
+        this.innerText = isHidden ? "📁 Mostrar Menú" : "📁 Ocultar Menú";
+      });
+    }
   });
 </script>
 
