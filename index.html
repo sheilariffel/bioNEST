@@ -616,67 +616,67 @@
 <body>
 
 <!-- SIDEBAR -->
-<nav id="sidebar">
+<aside class="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-name">BioNest</div>
-    <div class="logo-sub">Sistema de Ectogénesis</div>
+    <h1>Bio<span>Nest</span></h1>
+    <p>Sistema de Ectogénesis</p>
   </div>
 
   <div class="sidebar-section">
     <div class="sidebar-section-label">General</div>
     <div class="nav-item active" onclick="showSection('overview')">
-      <span class="nav-icon">🏠</span> Home
+      <span class="nav-icon">⌂</span> Home
     </div>
     <div class="nav-item" onclick="showSection('scope')">
-      <span class="nav-icon">🎯</span> Alcance del Proyecto
+      <span class="nav-icon">◎</span> Alcance del Proyecto
     </div>
     <div class="nav-item" onclick="showSection('stakeholders')">
-      <span class="nav-icon">👥</span> Stakeholders
+      <span class="nav-icon">⁂</span> Stakeholders
     </div>
     <div class="nav-item" onclick="showSection('team')">
-      <span class="nav-icon">🧬</span> Equipo
+      <span class="nav-icon">⬡</span> Equipo
     </div>
   </div>
 
   <div class="sidebar-section">
     <div class="sidebar-section-label">Planificación</div>
     <div class="nav-item" onclick="showSection('lifecycle')">
-      <span class="nav-icon">🔄</span> Ciclo de Vida
+      <span class="nav-icon">⟳</span> Ciclo de Vida
     </div>
     <div class="nav-item" onclick="showSection('wbs')">
-      <span class="nav-icon">🌳</span> WBS Completa <span class="nav-badge">44</span>
+      <span class="nav-icon">◫</span> WBS Completa <span class="nav-badge">44</span>
     </div>
     <div class="nav-item" onclick="showSection('roadmap')">
-      <span class="nav-icon">🗓</span> Roadmap
+      <span class="nav-icon">⇒</span> Roadmap
     </div>
     <div class="nav-item" onclick="showSection('pert')">
-      <span class="nav-icon">📊</span> Estimaciones PERT
+      <span class="nav-icon">◈</span> Estimaciones PERT
     </div>
   </div>
 
   <div class="sidebar-section">
     <div class="sidebar-section-label">Ejecución</div>
     <div class="nav-item" onclick="showSection('kanban')">
-      <span class="nav-icon">📋</span> Kanban & WIP
+      <span class="nav-icon">⊞</span> Kanban & WIP
     </div>
     <div class="nav-item" onclick="showSection('gates')">
-      <span class="nav-icon">🚪</span> Stage-Gates
+      <span class="nav-icon">⊳</span> Stage-Gates
     </div>
     <div class="nav-item" onclick="showSection('raci')">
-      <span class="nav-icon">📌</span> Matriz RACI
+      <span class="nav-icon">◉</span> Matriz RACI
     </div>
     <div class="nav-item" onclick="showSection('metrics')">
-      <span class="nav-icon">📈</span> Métricas Kanban
+      <span class="nav-icon">⊿</span> Métricas Kanban
     </div>
   </div>
 
   <div class="sidebar-section">
     <div class="sidebar-section-label">Control</div>
     <div class="nav-item" onclick="showSection('risks')">
-      <span class="nav-icon">⚠️</span> Gestión de Riesgos
+      <span class="nav-icon">⚠</span> Gestión de Riesgos
     </div>
     <div class="nav-item" onclick="showSection('bibliography')">
-      <span class="nav-icon">📚</span> Bibliografía & Contexto
+      <span class="nav-icon">≡</span> Bibliografía & Contexto
     </div>
   </div>
 </nav>
@@ -1265,7 +1265,7 @@
       <!-- VISUAL ROADMAP BUTTON -->
       <div style="margin-bottom:20px;">
         <button onclick="openVisualRoadmap()" style="background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-          &#x1F5FA;&#xFE0F; Ver Roadmap Visual &#8212; Pantalla Completa
+          &#x1F5FA;&#xFE0F; Ver Roadmap Visual &#8212;
         </button>
         <span style="font-size:11px;color:var(--text-muted);margin-left:12px;font-family:'DM Mono',monospace;">Presion&#225; ESC para salir</span>
       </div>
@@ -1322,7 +1322,7 @@
             <circle cx="490" cy="210" r="5" fill="#fff"/>
             <rect x="408" y="38" width="164" height="90" rx="14" fill="#d4a017"/>
             <text x="490" y="58" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">2.1 KANBAN WIP=2</text>
-            <text x="490" y="78" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Rect&#225;culo Uterino</text>
+            <text x="490" y="78" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Recept&#225;culo Uterino</text>
             <text x="490" y="98" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">206,9 hs &middot; 15 d&#237;as</text>
             <text x="490" y="114" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Cuello: bioimpresi&#243;n</text>
             <text x="490" y="226" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#d4a017" font-weight="700">02 DIC</text>
@@ -1393,7 +1393,7 @@
             <circle cx="1320" cy="210" r="5" fill="#fff"/>
             <rect x="1238" y="38" width="164" height="90" rx="14" fill="#1d4e89"/>
             <text x="1320" y="58" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">4.2 PREDICTIVA</text>
-            <text x="1320" y="78" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Marketing y Licenc.</text>
+            <text x="1320" y="78" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Marketing y Lic.</text>
             <text x="1320" y="98" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">24,1 hs &middot; 4 d&#237;as</text>
             <text x="1320" y="114" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Presentaci&#243;n final</text>
             <text x="1320" y="226" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#1d4e89" font-weight="700">24 MAY</text>
@@ -1405,8 +1405,7 @@
             <rect x="1383" y="294" width="164" height="90" rx="14" fill="#2d6a4f"/>
             <text x="1465" y="314" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">FIN DEL PROYECTO</text>
             <text x="1465" y="337" text-anchor="middle" font-family="Playfair Display,serif" font-size="16" fill="#fff" font-weight="700">&#127919; 28 MAY</text>
-            <text x="1465" y="358" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">1747,9 hs totales</text>
-            <text x="1465" y="374" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">173 d&#237;as h&#225;biles</text>
+            <text x="1465" y="374" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">202 d&#237;as h&#225;biles</text>
             <text x="1465" y="200" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#2d6a4f" font-weight="700">28 MAY 2027</text>
           </svg>
         </div>
@@ -1458,7 +1457,7 @@
               <tr style="background:#f5f3ef"><td colspan="7"><strong>FASE 4 — Cierre y Transferencia</strong></td></tr>
               <tr><td>4.1 Documentación As-Built</td><td><span class="tag tag-blue">Predictiva</span></td><td class="mono">06/05/2027</td><td class="mono">21/05/2027</td><td class="mono">12</td><td class="mono">95,6 hs</td><td>—</td></tr>
               <tr><td>4.2 Marketing y Licenciamiento</td><td><span class="tag tag-blue">Predictiva</span></td><td class="mono">24/05/2027</td><td class="mono">28/05/2027</td><td class="mono">4</td><td class="mono">24,1 hs</td><td>—</td></tr>
-              <tr style="background:#d8f3e3; font-weight:700"><td colspan="2"><strong>🎯 FIN DEL PROYECTO</strong></td><td colspan="2" class="mono"><strong>28/05/2027</strong></td><td class="mono"><strong>~173 días hábiles</strong></td><td class="mono"><strong>1747,9 hs totales</strong></td><td>—</td></tr>
+              <tr style="background:#d8f3e3; font-weight:700"><td colspan="2"><strong>🎯 FIN DEL PROYECTO</strong></td><td colspan="2" class="mono"><strong>28/05/2027</strong></td><td class="mono"><strong>~202 días hábiles</strong></td><td>—</td><td>—</td></tr>
             </tbody>
           </table>
         </div>
@@ -1776,7 +1775,7 @@
       <tbody>
  
         <!-- 1. Judy Hopps — total 17 -->
-        <tr style="background:#fef9e7">
+        <tr>
           <td style="font-weight:600">Judy Hopps</td>
           <td style="font-size:12px;color:var(--text-muted);font-family:'DM Mono',monospace">Jefe de Ingenieria</td>
           <td style="text-align:center"><span class="raci-r">1</span></td>
@@ -1794,7 +1793,7 @@
         </tr>
  
         <!-- 2. Bugs Bunny — total 15 -->
-        <tr style="background:#fef9e7">
+        <tr>
           <td style="font-weight:600">Bugs Bunny</td>
           <td style="font-size:12px;color:var(--text-muted);font-family:'DM Mono',monospace">Director de Proyecto</td>
           <td style="text-align:center"><span class="raci-r">10</span></td>
