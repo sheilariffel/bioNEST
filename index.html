@@ -1447,9 +1447,25 @@
               <tr><td>1.2 Expediente Bioético</td><td><span class="tag tag-blue">Predictiva</span></td><td class="mono">08/09/2026</td><td class="mono">06/11/2026</td><td class="mono">43 (13+30)</td><td class="mono">103 hs + espera CICUAL</td><td>Espera CICUAL 30 días</td></tr>
               <tr><td>1.3 Definición Técnica</td><td><span class="tag tag-blue">Predictiva</span></td><td class="mono">09/11/2026</td><td class="mono">01/12/2026</td><td class="mono">16</td><td class="mono">126 hs</td><td>—</td></tr>
               <tr style="background:#f5f3ef"><td colspan="7"><strong>FASE 2 — Desarrollo de Subsistemas</strong></td></tr>
-              <tr><td>2.1 Receptáculo Uterino</td><td><span class="tag tag-orange">Kanban WIP=2</span></td><td class="mono">02/12/2026</td><td class="mono">23/12/2026</td><td class="mono">15</td><td class="mono">206,9 hs</td><td>Slot 1: 112,2h (bioimpresión)</td></tr>
-              <tr><td>2.2 Circuitos de Soporte Vital</td><td><span class="tag tag-orange">Kanban WIP=2</span></td><td class="mono">24/12/2026</td><td class="mono">25/01/2027</td><td class="mono">21</td><td class="mono">323,8 hs</td><td>Slot 2: 164,8h (hematosis)</td></tr>
-              <tr><td>2.3 Electrónica y Control</td><td><span class="tag tag-orange">Kanban WIP=2</span></td><td class="mono">26/01/2027</td><td class="mono">19/02/2027</td><td class="mono">17</td><td class="mono">237,6 hs</td><td>Slot 2: 133h (dashboard)</td></tr>
+              <tr onclick="abrirModal21()" style="cursor:pointer;" title="Ver detalle de slots">
+  <td>2.1 Receptáculo Uterino <span style="font-size:10px; color:var(--accent3); font-family:'DM Mono',monospace; margin-left:6px;">▶ ver slots</span></td>
+  <td><span class="tag tag-orange">Kanban WIP=2</span></td>
+  <td class="mono">02/12/2026</td>
+  <td class="mono">23/12/2026</td>
+  <td class="mono">15</td>
+  <td class="mono">206,9 hs</td>
+  <td>Slot 1: 112,2h (bioimpresión)</td>
+</tr>
+              
+              <tr onclick="abrirModal23()" style="cursor:pointer;" title="Ver detalle de slots">
+  <td>2.3 Electrónica y Control <span style="font-size:10px; color:var(--accent3); font-family:'DM Mono',monospace; margin-left:6px;">▶ ver slots</span></td>
+  <td><span class="tag tag-orange">Kanban WIP=2</span></td>
+  <td class="mono">26/01/2027</td>
+  <td class="mono">19/02/2027</td>
+  <td class="mono">17</td>
+  <td class="mono">237,6 hs</td>
+  <td>Slot 2: 133h (dashboard)</td>
+</tr>
               <tr style="background:#fef3e2"><td colspan="7"><em>⛱ VACACIONES: 22 feb 2027 → 05 mar 2027 (2 semanas)</em></td></tr>
               <tr style="background:#f5f3ef"><td colspan="7"><strong>FASE 3 — Integración y Validación</strong></td></tr>
               <tr><td>3.1 Integración Mecánica y Electrónica</td><td><span class="tag tag-red">Kanban WIP=1</span></td><td class="mono">08/03/2027</td><td class="mono">06/04/2027</td><td class="mono">20</td><td class="mono">153,6 hs</td><td>Serie estricta (ensamble→sensores→calibración)</td></tr>
@@ -2543,5 +2559,199 @@ function buildRaci() {
   });
 </script>
 
+<!-- MODAL FASE 2.1 -->
+<div id="modal-fase21" onclick="cerrarModal21()" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(0,0,0,0.5);
+  align-items:center; justify-content:center;
+">
+  <div onclick="event.stopPropagation()" style="
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:28px; max-width:600px; width:90%;
+    box-shadow:0 8px 40px rgba(0,0,0,0.2);
+  ">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <div>
+        <div class="card-title">2.1 — Receptáculo Uterino</div>
+        <div class="card-subtitle">PLANIFICACIÓN DE SLOTS EN PARALELO (WIP = 2)</div>
+      </div>
+      <button onclick="cerrarModal21()" style="
+        background:none; border:none; font-size:20px; cursor:pointer;
+        color:var(--text-muted); line-height:1;
+      ">✕</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:center">Slot 1</th>
+            <th style="text-align:center">Slot 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2.1.1 (20h)</td>
+            <td>2.1.2 (58.7h) — arrancan juntas</td>
+          </tr>
+          <tr>
+            <td>2.1.3 (92.2h) — entra cuando termina 2.1.1</td>
+            <td>2.1.2 sigue...</td>
+          </tr>
+          <tr>
+            <td>2.1.3 sigue...</td>
+            <td>2.1.4 (36h) — entra cuando termina 2.1.2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:14px; font-size:12px; color:var(--text-muted); font-family:'DM Mono',monospace;">
+      Hacé clic fuera del cuadro o en ✕ para cerrar
+    </div>
+  </div>
+</div>
+
+<script>
+  function abrirModal21() {
+    const m = document.getElementById('modal-fase21');
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function cerrarModal21() {
+    const m = document.getElementById('modal-fase21');
+    m.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') cerrarModal21();
+  });
+</script>
+<!-- MODAL FASE 2.2 -->
+<div id="modal-fase22" onclick="cerrarModal22()" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(0,0,0,0.5);
+  align-items:center; justify-content:center;
+">
+  <div onclick="event.stopPropagation()" style="
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:28px; max-width:600px; width:90%;
+    box-shadow:0 8px 40px rgba(0,0,0,0.2);
+  ">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <div>
+        <div class="card-title">2.2 — Circuitos de Soporte Vital</div>
+        <div class="card-subtitle">PLANIFICACIÓN DE SLOTS EN PARALELO (WIP = 2)</div>
+      </div>
+      <button onclick="cerrarModal22()" style="
+        background:none; border:none; font-size:20px; cursor:pointer;
+        color:var(--text-muted); line-height:1;
+      ">✕</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:center">Slot 1</th>
+            <th style="text-align:center">Slot 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2.2.1 (88.4h)</td>
+            <td>2.2.2 (126h) — arrancan juntas</td>
+          </tr>
+          <tr>
+            <td>2.2.3 (70.6h) — entra cuando termina 2.2.1</td>
+            <td>2.2.2 sigue...</td>
+          </tr>
+          <tr>
+            <td>2.2.3 sigue...</td>
+            <td>2.2.4 (38.8h) — entra cuando termina 2.2.2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:14px; font-size:12px; color:var(--text-muted); font-family:'DM Mono',monospace;">
+      Hacé clic fuera del cuadro o en ✕ para cerrar
+    </div>
+  </div>
+</div>
+
+<script>
+  function abrirModal22() {
+    const m = document.getElementById('modal-fase22');
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function cerrarModal22() {
+    const m = document.getElementById('modal-fase22');
+    m.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+</script>
+<!-- MODAL FASE 2.3 -->
+<div id="modal-fase23" onclick="cerrarModal23()" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(0,0,0,0.5);
+  align-items:center; justify-content:center;
+">
+  <div onclick="event.stopPropagation()" style="
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:28px; max-width:600px; width:90%;
+    box-shadow:0 8px 40px rgba(0,0,0,0.2);
+  ">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <div>
+        <div class="card-title">2.3 — Electrónica y Control</div>
+        <div class="card-subtitle">PLANIFICACIÓN DE SLOTS EN PARALELO (WIP = 2)</div>
+      </div>
+      <button onclick="cerrarModal23()" style="
+        background:none; border:none; font-size:20px; cursor:pointer;
+        color:var(--text-muted); line-height:1;
+      ">✕</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:center">Slot 1</th>
+            <th style="text-align:center">Slot 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2.3.1 (65.3h)</td>
+            <td>2.3.2 (87.2h) — arrancan juntas</td>
+          </tr>
+          <tr>
+            <td>2.3.3 (39.3h) — entra cuando termina 2.3.1</td>
+            <td>2.3.2 sigue...</td>
+          </tr>
+          <tr>
+            <td>2.3.3 sigue...</td>
+            <td>2.3.4 (45.8h) — entra cuando termina 2.3.2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:14px; font-size:12px; color:var(--text-muted); font-family:'DM Mono',monospace;">
+      Hacé clic fuera del cuadro o en ✕ para cerrar
+    </div>
+  </div>
+</div>
+
+<script>
+  function abrirModal23() {
+    const m = document.getElementById('modal-fase23');
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function cerrarModal23() {
+    const m = document.getElementById('modal-fase23');
+    m.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+</script>
+
+  
 </body>
 </html>
