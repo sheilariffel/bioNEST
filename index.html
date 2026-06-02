@@ -1261,7 +1261,170 @@
     <div id="sec-roadmap" class="section">
       <div class="section-heading">Roadmap del Proyecto</div>
       <div class="section-desc">Inicio: 3 Agosto 2026 · Fin: 28 Mayo 2027 · El Gantt con fechas absolutas por tarea se reemplaza por este Roadmap para las fases adaptativas.</div>
-
+ 
+      <!-- VISUAL ROADMAP BUTTON -->
+      <div style="margin-bottom:20px;">
+        <button onclick="openVisualRoadmap()" style="background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          &#x1F5FA;&#xFE0F; Ver Roadmap Visual &#8212; Pantalla Completa
+        </button>
+        <span style="font-size:11px;color:var(--text-muted);margin-left:12px;font-family:'DM Mono',monospace;">Presion&#225; ESC para salir</span>
+      </div>
+ 
+      <!-- FULLSCREEN VISUAL ROADMAP OVERLAY -->
+      <div id="roadmap-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:#f8f6f2;overflow-y:auto;overflow-x:hidden;">
+        <button onclick="closeVisualRoadmap()" title="Cerrar (ESC)" style="position:fixed;top:18px;right:22px;z-index:10001;background:#1a1916;color:#f5f3ef;border:none;border-radius:8px;padding:8px 16px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">
+          &#x2715; ESC / Cerrar
+        </button>
+        <div style="text-align:center;padding:36px 40px 0;">
+          <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:#1a1916;">BioNest &#8212; Roadmap del Proyecto</div>
+          <div style="font-size:13px;color:#6b6760;margin-top:6px;font-family:'DM Mono',monospace;">3 AGO 2026 &#8594; 28 MAY 2027 &middot; 173 d&#237;as h&#225;biles &middot; 1747,9 hs totales</div>
+        </div>
+        <div style="padding:20px 30px 10px;overflow-x:auto;">
+          <svg viewBox="0 0 1400 420" style="width:max(100%,1400px);display:block;" xmlns="http://www.w3.org/2000/svg">
+            <line x1="60" y1="210" x2="1340" y2="210" stroke="#c8c4bc" stroke-width="2.5"/>
+ 
+            <!-- 1: Planificacion BELOW -->
+            <line x1="100" y1="210" x2="100" y2="290" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="100" cy="210" r="10" fill="#3B6FA0"/>
+            <circle cx="100" cy="210" r="5" fill="#fff"/>
+            <rect x="18" y="294" width="164" height="90" rx="14" fill="#3B6FA0"/>
+            <text x="100" y="314" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">1.1 GESTI&#211;N</text>
+            <text x="100" y="334" text-anchor="middle" font-family="Playfair Display,serif" font-size="14" fill="#fff" font-weight="700">Planificaci&#243;n</text>
+            <text x="100" y="354" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">194,5 hs &middot; 25 d&#237;as</text>
+            <text x="100" y="370" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Contador medio tiempo</text>
+            <text x="100" y="200" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#3B6FA0" font-weight="700">03 AGO</text>
+ 
+            <!-- 2: Expediente Bioetico ABOVE -->
+            <line x1="230" y1="210" x2="230" y2="130" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="230" cy="210" r="10" fill="#b5451b"/>
+            <circle cx="230" cy="210" r="5" fill="#fff"/>
+            <rect x="148" y="38" width="164" height="90" rx="14" fill="#b5451b"/>
+            <text x="230" y="58" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">1.2 NORMATIVO</text>
+            <text x="230" y="78" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Exp. Bio&#233;tico</text>
+            <text x="230" y="98" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">103 hs &middot; 43 d&#237;as</text>
+            <text x="230" y="114" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Espera CICUAL 30d</text>
+            <text x="230" y="226" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#b5451b" font-weight="700">08 SEP</text>
+ 
+            <!-- 3: Definicion Tecnica BELOW -->
+            <line x1="360" y1="210" x2="360" y2="290" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="360" cy="210" r="10" fill="#2d6a4f"/>
+            <circle cx="360" cy="210" r="5" fill="#fff"/>
+            <rect x="278" y="294" width="164" height="90" rx="14" fill="#2d6a4f"/>
+            <text x="360" y="314" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">1.3 T&#201;CNICA</text>
+            <text x="360" y="334" text-anchor="middle" font-family="Playfair Display,serif" font-size="14" fill="#fff" font-weight="700">Def. T&#233;cnica</text>
+            <text x="360" y="354" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">126 hs &middot; 16 d&#237;as</text>
+            <text x="360" y="370" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Arq. funcional + P&amp;ID</text>
+            <text x="360" y="200" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#2d6a4f" font-weight="700">09 NOV</text>
+ 
+            <!-- 4: Receptaculo Uterino ABOVE -->
+            <line x1="490" y1="210" x2="490" y2="130" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="490" cy="210" r="10" fill="#d4a017"/>
+            <circle cx="490" cy="210" r="5" fill="#fff"/>
+            <rect x="408" y="38" width="164" height="90" rx="14" fill="#d4a017"/>
+            <text x="490" y="58" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">2.1 KANBAN WIP=2</text>
+            <text x="490" y="78" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Rect&#225;culo Uterino</text>
+            <text x="490" y="98" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">206,9 hs &middot; 15 d&#237;as</text>
+            <text x="490" y="114" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Cuello: bioimpresi&#243;n</text>
+            <text x="490" y="226" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#d4a017" font-weight="700">02 DIC</text>
+ 
+            <!-- 5: Circuitos Soporte Vital BELOW -->
+            <line x1="630" y1="210" x2="630" y2="290" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="630" cy="210" r="10" fill="#b5451b"/>
+            <circle cx="630" cy="210" r="5" fill="#fff"/>
+            <rect x="548" y="294" width="164" height="90" rx="14" fill="#b5451b"/>
+            <text x="630" y="314" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">2.2 KANBAN WIP=2</text>
+            <text x="630" y="334" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Soporte Vital</text>
+            <text x="630" y="354" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">323,8 hs &middot; 21 d&#237;as</text>
+            <text x="630" y="370" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Cuello: hematosis</text>
+            <text x="630" y="200" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#b5451b" font-weight="700">24 DIC</text>
+ 
+            <!-- 6: Electronica ABOVE -->
+            <line x1="760" y1="210" x2="760" y2="130" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="760" cy="210" r="10" fill="#7b3f00"/>
+            <circle cx="760" cy="210" r="5" fill="#fff"/>
+            <rect x="678" y="38" width="164" height="90" rx="14" fill="#7b3f00"/>
+            <text x="760" y="58" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">2.3 KANBAN WIP=2</text>
+            <text x="760" y="78" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Electr&#243;nica y Control</text>
+            <text x="760" y="98" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">237,6 hs &middot; 17 d&#237;as</text>
+            <text x="760" y="114" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Cuello: dashboard</text>
+            <text x="760" y="226" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#7b3f00" font-weight="700">26 ENE</text>
+ 
+            <!-- VACACIONES badge -->
+            <rect x="808" y="198" width="88" height="24" rx="6" fill="#fef3e2" stroke="#d4a017" stroke-width="1"/>
+            <text x="852" y="213" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#7b3f00" font-weight="700">&#x26F1; VACACIONES</text>
+            <text x="852" y="194" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#7b3f00">22 FEB &#8211; 05 MAR</text>
+ 
+            <!-- 7: Integracion BELOW -->
+            <line x1="930" y1="210" x2="930" y2="290" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="930" cy="210" r="10" fill="#1d4e89"/>
+            <circle cx="930" cy="210" r="5" fill="#fff"/>
+            <rect x="848" y="294" width="164" height="90" rx="14" fill="#1d4e89"/>
+            <text x="930" y="314" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">3.1 KANBAN WIP=1</text>
+            <text x="930" y="334" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Integraci&#243;n</text>
+            <text x="930" y="354" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">153,6 hs &middot; 20 d&#237;as</text>
+            <text x="930" y="370" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Serie estricta</text>
+            <text x="930" y="200" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#1d4e89" font-weight="700">08 MAR</text>
+ 
+            <!-- 8: Protocolo Pruebas ABOVE -->
+            <line x1="1070" y1="210" x2="1070" y2="130" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="1070" cy="210" r="10" fill="#b5451b"/>
+            <circle cx="1070" cy="210" r="5" fill="#fff"/>
+            <rect x="988" y="38" width="164" height="90" rx="14" fill="#b5451b"/>
+            <text x="1070" y="58" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">3.2 KANBAN WIP=1</text>
+            <text x="1070" y="78" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Protocolo Pruebas</text>
+            <text x="1070" y="98" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">156,2 hs &middot; 20 d&#237;as</text>
+            <text x="1070" y="114" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Serie estricta</text>
+            <text x="1070" y="226" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#b5451b" font-weight="700">07 ABR</text>
+ 
+            <!-- 9: Documentacion BELOW -->
+            <line x1="1200" y1="210" x2="1200" y2="290" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="1200" cy="210" r="10" fill="#2d6a4f"/>
+            <circle cx="1200" cy="210" r="5" fill="#fff"/>
+            <rect x="1118" y="294" width="164" height="90" rx="14" fill="#2d6a4f"/>
+            <text x="1200" y="314" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">4.1 PREDICTIVA</text>
+            <text x="1200" y="334" text-anchor="middle" font-family="Playfair Display,serif" font-size="13" fill="#fff" font-weight="700">Documentaci&#243;n</text>
+            <text x="1200" y="354" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">95,6 hs &middot; 12 d&#237;as</text>
+            <text x="1200" y="370" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">As-Built + Manual</text>
+            <text x="1200" y="200" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#2d6a4f" font-weight="700">06 MAY</text>
+ 
+            <!-- 10: FIN ABOVE -->
+            <line x1="1325" y1="210" x2="1325" y2="130" stroke="#b0ac9e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <circle cx="1325" cy="210" r="14" fill="#2d6a4f"/>
+            <circle cx="1325" cy="210" r="7" fill="#fff"/>
+            <rect x="1243" y="38" width="164" height="90" rx="14" fill="#2d6a4f"/>
+            <text x="1325" y="58" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.75)">4.2 PREDICTIVA</text>
+            <text x="1325" y="79" text-anchor="middle" font-family="Playfair Display,serif" font-size="15" fill="#fff" font-weight="700">FIN DEL PROYECTO</text>
+            <text x="1325" y="98" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,.8)">24,1 hs &middot; 4 d&#237;as</text>
+            <text x="1325" y="114" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,.65)">Presentaci&#243;n final</text>
+            <text x="1325" y="226" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#2d6a4f" font-weight="700">28 MAY 2027</text>
+          </svg>
+        </div>
+ 
+        <!-- Legend -->
+        <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;padding:10px 40px 40px;font-family:'DM Mono',monospace;font-size:11px;color:#6b6760;">
+          <span><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#3B6FA0;margin-right:5px;vertical-align:middle"></span>Fase 1 &#8212; Planificaci&#243;n</span>
+          <span><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#d4a017;margin-right:5px;vertical-align:middle"></span>Rect&#225;culo (Kanban WIP=2)</span>
+          <span><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#b5451b;margin-right:5px;vertical-align:middle"></span>Circuitos / Pruebas</span>
+          <span><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#7b3f00;margin-right:5px;vertical-align:middle"></span>Electr&#243;nica</span>
+          <span><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#1d4e89;margin-right:5px;vertical-align:middle"></span>Integraci&#243;n</span>
+          <span><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#2d6a4f;margin-right:5px;vertical-align:middle"></span>Cierre</span>
+        </div>
+      </div>
+ 
+      <script>
+        function openVisualRoadmap() {
+          document.getElementById('roadmap-overlay').style.display = 'block';
+          document.body.style.overflow = 'hidden';
+        }
+        function closeVisualRoadmap() {
+          document.getElementById('roadmap-overlay').style.display = 'none';
+          document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') closeVisualRoadmap();
+        });
+      </script>
+ 
       <div class="card" style="padding:0; overflow:hidden;">
         <div class="table-wrap">
           <table>
@@ -1289,7 +1452,7 @@
           </table>
         </div>
       </div>
-
+ 
       <div class="card">
         <div class="card-title">Feriados Descontados por Subfase</div>
         <div class="card-subtitle">CALENDARIO ARGENTINO 2026–2027</div>
