@@ -657,8 +657,11 @@
   <div class="sidebar-section">
     <div class="sidebar-section-label">Ejecución</div>
     <div class="nav-item" onclick="showSection('kanban')">
-      <span class="nav-icon">⊞</span> Kanban & WIP
-    </div>
+  <span class="nav-icon">⊞</span> Kanban & WIP
+</div>
+<div class="nav-item" onclick="showSection('kanban-board')">
+  <span class="nav-icon">🗂</span> Tablero Kanban
+</div>
     <div class="nav-item" onclick="showSection('gates')">
       <span class="nav-icon">⊳</span> Stage-Gates
     </div>
@@ -1684,6 +1687,481 @@
       </div>
     </div>
 
+    <!-- ========== KANBAN BOARD INTERACTIVO ========== -->
+<div id="sec-kanban-board" class="section">
+  <div class="section-heading">Tablero Kanban — Interactivo</div>
+  <div class="section-desc">Arrastrá las cards entre columnas. Los límites WIP se muestran en rojo cuando se superan. Tu progreso se guarda automáticamente en el navegador.</div>
+
+  <div style="display:flex; gap:10px; align-items:center; margin-bottom:18px; flex-wrap:wrap;">
+    <select id="kb-filter-phase" onchange="kb_render()" style="font-family:inherit; font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text); cursor:pointer;">
+      <option value="">Todas las fases</option>
+      <option value="1">Fase 1 — Planificación</option>
+      <option value="2">Fase 2 — Subsistemas</option>
+      <option value="3">Fase 3 — Integración</option>
+      <option value="4">Fase 4 — Cierre</option>
+    </select>
+    <select id="kb-filter-owner" onchange="kb_render()" style="font-family:inherit; font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text); cursor:pointer;">
+      <option value="">Todos los owners</option>
+      <option value="Bugs">Bugs Bunny</option>
+      <option value="Judy">Judy Hopps</option>
+      <option value="Belen">Belen Hornus</option>
+      <option value="Mateo">Mateo Anderson</option>
+      <option value="Conejo">Sr. Conejo</option>
+      <option value="Roger">Roger Rabbit</option>
+      <option value="Snowball">Snowball</option>
+      <option value="Lola">Lola Bunny</option>
+      <option value="Fatu">Fatu</option>
+      <option value="Peter">Peter Rabbit</option>
+      <option value="Sheila">Sheila Riffel</option>
+      <option value="Najin">Najin</option>
+    </select>
+    <button onclick="kb_reset()" style="font-family:inherit; font-size:12px; padding:6px 12px; border:1px solid var(--border); border-radius:6px; background:var(--surface2); color:var(--text); cursor:pointer;">↺ Reiniciar tablero</button>
+    <div id="kb-stats" style="margin-left:auto; font-family:'DM Mono',monospace; font-size:11px; color:var(--text-muted);"></div>
+  </div>
+
+  <!-- Leyenda de fases -->
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; font-family:'DM Mono',monospace; font-size:10px;">
+    <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#3B6FA0;margin-right:4px;vertical-align:middle"></span>F1 Planificación</span>
+    <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#d4a017;margin-right:4px;vertical-align:middle"></span>F2.1 Receptáculo</span>
+    <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#b5451b;margin-right:4px;vertical-align:middle"></span>F2.2 Soporte Vital</span>
+    <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#7b3f00;margin-right:4px;vertical-align:middle"></span>F2.3 Electrónica</span>
+    <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#1d4e89;margin-right:4px;vertical-align:middle"></span>F3 Integración</span>
+    <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#2d6a4f;margin-right:4px;vertical-align:middle"></span>F4 Cierre</span>
+    <span style="margin-left:8px;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#b5451b;margin-right:4px;vertical-align:middle"></span>Gate</span>
+  </div>
+
+  <div id="kb-board" style="display:flex; gap:12px; overflow-x:auto; padding-bottom:16px; align-items:flex-start;"></div>
+</div>
+
+<style>
+  /* ---- KANBAN BOARD ---- */
+  .kb-col {
+    min-width: 210px;
+    max-width: 210px;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 12px 10px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .kb-col.wip-over { border-color: var(--accent2) !important; background: #fff5f3; }
+  .kb-col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 6px;
+  }
+  .kb-col-title {
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    flex: 1;
+  }
+  .kb-wip-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: var(--border);
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-weight: 700;
+  }
+  .kb-wip-badge.over { background: var(--accent2); color: #fff; }
+  .kb-drop-zone {
+    min-height: 60px;
+    border-radius: 8px;
+    transition: background 0.15s, min-height 0.1s;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px 0;
+  }
+  .kb-drop-zone.drag-over {
+    background: rgba(45,106,79,0.08);
+    min-height: 80px;
+    border: 2px dashed var(--accent);
+    border-radius: 8px;
+  }
+  .kb-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    padding: 10px 11px;
+    cursor: grab;
+    user-select: none;
+    transition: box-shadow 0.15s, transform 0.12s, opacity 0.15s;
+    border-left: 4px solid #ccc;
+    position: relative;
+  }
+  .kb-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); transform: translateY(-1px); }
+  .kb-card.dragging { opacity: 0.45; transform: scale(0.97); cursor: grabbing; }
+  .kb-card.gate-card {
+    background: #fff5f3;
+    border-left-color: var(--accent2) !important;
+    border-style: dashed;
+  }
+  .kb-card-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .kb-card-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .kb-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .kb-owner-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .kb-hours {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+  .kb-gate-badge {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    background: var(--accent2-light);
+    color: var(--accent2);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  /* Columna done especial */
+  .kb-col[data-col="done"] .kb-drop-zone { min-height: 40px; }
+  .kb-col[data-col="done"] { background: #f0faf4; border-color: #b7e4c7; }
+  .kb-empty-hint {
+    color: var(--border);
+    font-size: 11px;
+    text-align: center;
+    padding: 12px 0 4px;
+    font-family: 'DM Mono', monospace;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+// ===================== KANBAN BOARD DATA =====================
+const KB_COLS = [
+  { id: 'backlog',    title: 'Backlog',         wip: null },
+  { id: 'ready',      title: 'Ready (DoR ✓)',    wip: null },
+  { id: 'inprogress', title: 'En Progreso',      wip: 2    },
+  { id: 'review',     title: 'Revisión / Gate',  wip: 2    },
+  { id: 'done',       title: 'Documentado ✓',    wip: null },
+];
+
+// Colores por subfase
+const KB_COLORS = {
+  '1': '#3B6FA0', '2.1': '#d4a017', '2.2': '#b5451b',
+  '2.3': '#7b3f00', '3': '#1d4e89', '4': '#2d6a4f'
+};
+function kb_color(id) {
+  if (id.startsWith('1.')) return KB_COLORS['1'];
+  if (id.startsWith('2.1')) return KB_COLORS['2.1'];
+  if (id.startsWith('2.2')) return KB_COLORS['2.2'];
+  if (id.startsWith('2.3')) return KB_COLORS['2.3'];
+  if (id.startsWith('3.')) return KB_COLORS['3'];
+  if (id.startsWith('4.')) return KB_COLORS['4'];
+  return '#999';
+}
+function kb_phase(id) {
+  if (id.startsWith('1.')) return '1';
+  if (id.startsWith('2.')) return '2';
+  if (id.startsWith('3.')) return '3';
+  if (id.startsWith('4.')) return '4';
+  return '';
+}
+
+const KB_CARDS_DEFAULT = [
+  // FASE 1.1
+  {id:'1.1.1', name:'Redactar Acta de Constitución',               owner:'Bugs',   hours:9.9,  gate:null, col:'backlog'},
+  {id:'1.1.2', name:'Plan de Gestión del Proyecto',                 owner:'Bugs',   hours:34.0, gate:null, col:'backlog'},
+  {id:'1.1.3', name:'Identificar Stakeholders',                     owner:'Bugs',   hours:10.9, gate:null, col:'backlog'},
+  {id:'1.1.4', name:'Registro de Riesgos Inicial',                  owner:'Bugs',   hours:15.3, gate:null, col:'backlog'},
+  {id:'1.1.5', name:'Diagramar Presupuesto',                        owner:'Najin',  hours:19.9, gate:null, col:'backlog'},
+  {id:'1.1.6', name:'Gestionar Contratos con Proveedores',          owner:'Najin',  hours:39.8, gate:null, col:'backlog'},
+  {id:'1.1.7', name:'Reunión de Kick Off',                          owner:'Bugs',   hours:5.0,  gate:null, col:'backlog'},
+  // FASE 1.2
+  {id:'1.2.1', name:'Documentación para Comité de Ética',           owner:'Roger',  hours:43.6, gate:null, col:'backlog'},
+  {id:'1.2.2', name:'Analizar implicancias y restricciones',        owner:'Roger',  hours:28.4, gate:null, col:'backlog'},
+  {id:'1.2.3', name:'Revisar documentación institucional',           owner:'Sheila', hours:25.4, gate:null, col:'backlog'},
+  {id:'1.2.4', name:'Enviar documentación al organismo',            owner:'Bugs',   hours:5.6,  gate:null, col:'backlog'},
+  {id:'1.2.5', name:'⬡ HITO: Aprobación CICUAL',                   owner:'—',      hours:0,    gate:'CICUAL', col:'backlog'},
+  // FASE 1.3
+  {id:'1.3.1', name:'Parámetros fisiológicos de referencia',        owner:'Roger',  hours:37.6, gate:null, col:'backlog'},
+  {id:'1.3.2', name:'Elaborar Matriz de Escalabilidad',             owner:'Belen',  hours:20.6, gate:null, col:'backlog'},
+  {id:'1.3.3', name:'Diseñar Arquitectura Funcional del Sistema',   owner:'Belen',  hours:43.1, gate:null, col:'backlog'},
+  {id:'1.3.4', name:'Elaborar Diagramas de Flujo (P&ID)',           owner:'Fatu',   hours:24.7, gate:null, col:'backlog'},
+  // FASE 2.1
+  {id:'2.1.1', name:'Comprar materiales tercerizados',              owner:'Najin',  hours:20.0, gate:null, col:'backlog'},
+  {id:'2.1.2', name:'Modelar CAD del habitáculo uterino',           owner:'Fatu',   hours:58.7, gate:null, col:'backlog'},
+  {id:'2.1.3', name:'Bioimprimir receptáculo (hidrogeles)',         owner:'Conejo', hours:92.2, gate:null, col:'backlog'},
+  {id:'2.1.4', name:'Pruebas de estanqueidad y presión',            owner:'Snow',   hours:36.0, gate:'S1', col:'backlog'},
+  // FASE 2.2
+  {id:'2.2.1', name:'Módulo de Bombeo — Corazón Artificial',        owner:'Belen',  hours:88.4, gate:'S2', col:'backlog'},
+  {id:'2.2.2', name:'Sistema de Hematosis Artificial',              owner:'Mateo',  hours:126.0,gate:'S3', col:'backlog'},
+  {id:'2.2.3', name:'Módulo de Filtrado y Diálisis',               owner:'Belen',  hours:70.6, gate:'S4', col:'backlog'},
+  {id:'2.2.4', name:'Sistema de Inyección Controlada',              owner:'Mateo',  hours:38.8, gate:null, col:'backlog'},
+  // FASE 2.3
+  {id:'2.3.1', name:'Integrar Matriz de Sensores (P, T, pH, Vol)', owner:'Mateo',  hours:65.3, gate:null, col:'backlog'},
+  {id:'2.3.2', name:'Desarrollar Dashboard (UI tiempo real)',       owner:'Lola',   hours:87.2, gate:'S5', col:'backlog'},
+  {id:'2.3.3', name:'Módulo de Estimulación (mecánica + acústica)', owner:'Belen',  hours:39.3, gate:null, col:'backlog'},
+  {id:'2.3.4', name:'Sistema de Almacenamiento de Datos',           owner:'Lola',   hours:45.8, gate:null, col:'backlog'},
+  // FASE 3.1
+  {id:'3.1.1', name:'Ensamblar Prototipo Físico Completo',          owner:'Mateo',  hours:68.1, gate:null, col:'backlog'},
+  {id:'3.1.2', name:'Acoplar Sensores al Dashboard',                owner:'Belen',  hours:35.6, gate:null, col:'backlog'},
+  {id:'3.1.3', name:'Calibrar Parámetros Fisiológicos',             owner:'Mateo',  hours:49.9, gate:'S6', col:'backlog'},
+  // FASE 3.2
+  {id:'3.2.1', name:'Ensayos Hidráulicos Integrados',               owner:'Snow',   hours:33.7, gate:null, col:'backlog'},
+  {id:'3.2.2', name:'Ensayos Térmicos Integrados',                  owner:'Snow',   hours:30.4, gate:null, col:'backlog'},
+  {id:'3.2.3', name:'Simulación Circulación Continua 24hs',         owner:'Snow',   hours:43.0, gate:'S6', col:'backlog'},
+  {id:'3.2.4', name:'Informe Final de Resultados',                  owner:'Snow',   hours:40.7, gate:null, col:'backlog'},
+  {id:'3.2.5', name:'Gestionar Validación Externa (QA)',            owner:'Bugs',   hours:8.4,  gate:null, col:'backlog'},
+  // FASE 4.1
+  {id:'4.1.1', name:'Actualizar Planos Finales As-Built',           owner:'Fatu',   hours:23.8, gate:null, col:'backlog'},
+  {id:'4.1.2', name:'Elaborar Fichas Técnicas',                     owner:'Conejo', hours:22.3, gate:null, col:'backlog'},
+  {id:'4.1.3', name:'Consolidar Log de Decisiones',                 owner:'Bugs',   hours:13.6, gate:null, col:'backlog'},
+  {id:'4.1.4', name:'Redactar Manual de Usuario',                   owner:'Judy',   hours:35.9, gate:null, col:'backlog'},
+  // FASE 4.2
+  {id:'4.2.1', name:'Reunión de Cierre',                            owner:'Bugs',   hours:5.4,  gate:null, col:'backlog'},
+  {id:'4.2.2', name:'Presentación Final a Institución Conservación',owner:'Bugs',   hours:18.7, gate:null, col:'backlog'},
+];
+
+// ---- STATE ----
+let kb_state = [];
+let kb_drag_id = null;
+
+function kb_load() {
+  try {
+    const saved = localStorage.getItem('bionest_kanban_v2');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // merge: mantener nuevas cards si se añadieron, respetar columnas guardadas
+      kb_state = KB_CARDS_DEFAULT.map(def => {
+        const s = parsed.find(p => p.id === def.id);
+        return s ? {...def, col: s.col} : {...def};
+      });
+    } else {
+      kb_state = KB_CARDS_DEFAULT.map(c => ({...c}));
+    }
+  } catch(e) {
+    kb_state = KB_CARDS_DEFAULT.map(c => ({...c}));
+  }
+}
+
+function kb_save() {
+  localStorage.setItem('bionest_kanban_v2', JSON.stringify(kb_state.map(c => ({id:c.id, col:c.col}))));
+}
+
+function kb_reset() {
+  if (!confirm('¿Reiniciar el tablero? Esto moverá todas las cards de vuelta al Backlog.')) return;
+  kb_state = KB_CARDS_DEFAULT.map(c => ({...c}));
+  kb_save();
+  kb_render();
+}
+
+function kb_get_filtered() {
+  const phase = document.getElementById('kb-filter-phase')?.value || '';
+  const owner = document.getElementById('kb-filter-owner')?.value || '';
+  return kb_state.filter(c => {
+    if (phase && kb_phase(c.id) !== phase) return false;
+    if (owner && !c.owner.includes(owner)) return false;
+    return true;
+  });
+}
+
+function kb_update_stats() {
+  const done = kb_state.filter(c => c.col === 'done').length;
+  const total = kb_state.length;
+  const pct = Math.round(done/total*100);
+  const hsTotal = kb_state.reduce((a,c) => a + (c.hours||0), 0);
+  const hsDone  = kb_state.filter(c => c.col === 'done').reduce((a,c) => a + (c.hours||0), 0);
+  const el = document.getElementById('kb-stats');
+  if(el) el.innerHTML = `✓ ${done}/${total} tareas (${pct}%) · ${hsDone.toFixed(0)} / ${hsTotal.toFixed(0)} hs`;
+}
+
+function kb_render() {
+  const board = document.getElementById('kb-board');
+  if (!board) return;
+  const filtered = kb_get_filtered();
+
+  board.innerHTML = '';
+
+  KB_COLS.forEach(col => {
+    const cards = kb_state.filter(c => c.col === col.id); // usar state completo para WIP
+    const visCards = filtered.filter(c => c.col === col.id);
+    const over = col.wip && cards.length > col.wip;
+
+    const colEl = document.createElement('div');
+    colEl.className = 'kb-col' + (over ? ' wip-over' : '');
+    colEl.dataset.col = col.id;
+
+    const wipLabel = col.wip
+      ? `<span class="kb-wip-badge ${over ? 'over' : ''}">${cards.length}/${col.wip}</span>`
+      : `<span class="kb-wip-badge">${cards.length}</span>`;
+
+    colEl.innerHTML = `
+      <div class="kb-col-header">
+        <div class="kb-col-title">${col.title}</div>
+        ${wipLabel}
+      </div>
+      <div class="kb-drop-zone" id="dz-${col.id}"></div>
+    `;
+    board.appendChild(colEl);
+
+    const dz = colEl.querySelector('.kb-drop-zone');
+
+    // Drag over / drop
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      dz.classList.remove('drag-over');
+      if (kb_drag_id) {
+        const card = kb_state.find(c => c.id === kb_drag_id);
+        if (card) { card.col = col.id; kb_save(); kb_render(); }
+        kb_drag_id = null;
+      }
+    });
+
+    if (visCards.length === 0) {
+      dz.innerHTML = `<div class="kb-empty-hint">— vacío —</div>`;
+    }
+
+    visCards.forEach(card => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'kb-card' + (card.gate ? ' gate-card' : '');
+      cardEl.draggable = true;
+      cardEl.dataset.id = card.id;
+      cardEl.style.borderLeftColor = kb_color(card.id);
+
+      const gateHtml = card.gate ? `<span class="kb-gate-badge">⊳ ${card.gate}</span>` : '';
+      const hoursHtml = card.hours > 0 ? `<span class="kb-hours">${card.hours}hs</span>` : '';
+
+      cardEl.innerHTML = `
+        <div class="kb-card-id">
+          <span>${card.id}</span>
+          ${gateHtml}
+        </div>
+        <div class="kb-card-name">${card.name}</div>
+        <div class="kb-card-footer">
+          <span class="kb-owner-tag">${card.owner}</span>
+          ${hoursHtml}
+        </div>
+      `;
+
+      cardEl.addEventListener('dragstart', e => {
+        kb_drag_id = card.id;
+        setTimeout(() => cardEl.classList.add('dragging'), 0);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      cardEl.addEventListener('dragend', () => cardEl.classList.remove('dragging'));
+
+      // Mobile: tap para mover (select)
+      cardEl.addEventListener('click', () => kb_mobile_move(card.id));
+
+      dz.appendChild(cardEl);
+    });
+  });
+
+  kb_update_stats();
+}
+
+// Mobile move: tap card → prompt para elegir columna
+let kb_selected = null;
+function kb_mobile_move(id) {
+  // Solo actúa en pantallas pequeñas o como alternativa al drag
+  // Doble click = abrir selector
+}
+
+// Touch support mejorado
+(function() {
+  let touchCard = null, touchClone = null, touchColTarget = null;
+
+  document.addEventListener('touchstart', e => {
+    const card = e.target.closest('.kb-card');
+    if (!card) return;
+    touchCard = card;
+    kb_drag_id = card.dataset.id;
+
+    // Clonar para feedback visual
+    touchClone = card.cloneNode(true);
+    touchClone.style.cssText = `
+      position:fixed; opacity:0.75; pointer-events:none; z-index:99999;
+      width:${card.offsetWidth}px; transform:scale(1.04);
+      border-radius:9px; box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    `;
+    document.body.appendChild(touchClone);
+  }, {passive:true});
+
+  document.addEventListener('touchmove', e => {
+    if (!touchClone) return;
+    const t = e.touches[0];
+    touchClone.style.left = (t.clientX - touchClone.offsetWidth/2) + 'px';
+    touchClone.style.top  = (t.clientY - 30) + 'px';
+
+    // Detectar columna debajo
+    touchClone.style.display = 'none';
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    touchClone.style.display = '';
+    const dz = el?.closest('.kb-drop-zone');
+    document.querySelectorAll('.kb-drop-zone').forEach(z => z.classList.remove('drag-over'));
+    if (dz) { dz.classList.add('drag-over'); touchColTarget = dz.id.replace('dz-',''); }
+    else touchColTarget = null;
+  }, {passive:true});
+
+  document.addEventListener('touchend', () => {
+    if (touchClone) { touchClone.remove(); touchClone = null; }
+    document.querySelectorAll('.kb-drop-zone').forEach(z => z.classList.remove('drag-over'));
+    if (kb_drag_id && touchColTarget) {
+      const card = kb_state.find(c => c.id === kb_drag_id);
+      if (card) { card.col = touchColTarget; kb_save(); kb_render(); }
+    }
+    kb_drag_id = null; touchCard = null; touchColTarget = null;
+  });
+})();
+
+// Init
+kb_load();
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.getElementById('kb-board')) kb_render();
+});
+// También renderizar cuando se navega a la sección
+const _origShowSection = showSection;
+window.showSection = function(id) {
+  _origShowSection(id);
+  if (id === 'kanban-board') { kb_load(); kb_render(); }
+};
+</script>
+
     <!-- ========== STAGE GATES ========== -->
     <div id="sec-gates" class="section">
       <div class="section-heading">Stage-Gates</div>
@@ -2338,6 +2816,7 @@ function showSection(id) {
     metrics: 'Métricas Kanban',
     risks: 'Gestión de Riesgos',
     bibliography: 'Bibliografía & Contexto'
+    'kanban-board': 'Tablero Kanban ',
   };
   const titleEl = document.getElementById('topbar-title');
   if (titleEl) titleEl.textContent = titles[id] || id;
