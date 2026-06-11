@@ -1161,7 +1161,6 @@
   <div class="section-desc">Arrastro las cards entre columnas. Los límites WIP se muestran en rojo cuando se superan.</div>
   <div style="display:flex; gap:10px; align-items:center; margin-bottom:18px; flex-wrap:wrap;">
     <select id="kb-filter-phase" onchange="kb_render()" style="font-family:inherit; font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text); cursor:pointer;">
-      <option value="">Fases 2 y 3</option>
       <option value="2">Fase 2 — Subsistemas</option>
       <option value="3">Fase 3 — Integración</option>
     </select>
@@ -2260,11 +2259,13 @@ function kb_render() {
   KB_COLS.forEach(col => {
     const cards = kb_state.filter(c => c.col === col.id);
     const visCards = filtered.filter(c => c.col === col.id);
-    const over = col.wip && cards.length > col.wip;
+    const activePhase = document.getElementById('kb-filter-phase')?.value || '';
+    const effectiveWip = (col.id === 'inprogress' && activePhase === '3') ? 1 : col.wip;
+    const over = effectiveWip && cards.length > effectiveWip;
     const colEl = document.createElement('div');
     colEl.className = 'kb-col' + (over ? ' wip-over' : '');
     colEl.dataset.col = col.id;
-    const wipLabel = col.wip ? '<span class="kb-wip-badge ' + (over?'over':'') + '">' + cards.length + '/' + col.wip + '</span>' : '<span class="kb-wip-badge">' + cards.length + '</span>';
+    const wipLabel = effectiveWip ? '<span class="kb-wip-badge ' + (over?'over':'') + '">' + cards.length + '/' + effectiveWip + '</span>' : '<span class="kb-wip-badge">' + cards.length + '</span>';
     colEl.innerHTML = '<div class="kb-col-header"><div class="kb-col-title">' + col.title + '</div>' + wipLabel + '</div><div class="kb-drop-zone" id="dz-' + col.id + '"></div>';
     board.appendChild(colEl);
     const dz = colEl.querySelector('.kb-drop-zone');
