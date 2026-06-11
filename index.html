@@ -1160,7 +1160,7 @@
   <div class="section-heading">Tablero Kanban — Interactivo</div>
   <div class="section-desc">Arrastro las cards entre columnas. Los límites WIP se muestran en rojo cuando se superan.</div>
   <div style="display:flex; gap:10px; align-items:center; margin-bottom:18px; flex-wrap:wrap;">
-    <select id="kb-filter-phase" onchange="kb_load(); kb_render();" style="font-family:inherit; font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text); cursor:pointer;">
+    <select id="kb-filter-phase" onchange="(function(){ kb_load(); kb_render(); })()" style="font-family:inherit; font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text); cursor:pointer;">
       <option value="2">Fase 2 — Subsistemas</option>
       <option value="3">Fase 3 — Integración</option>
     </select>
