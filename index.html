@@ -1161,14 +1161,12 @@
   <div class="section-desc">Arrastro las cards entre columnas. Los límites WIP se muestran en rojo cuando se superan.</div>
   <div style="display:flex; gap:10px; align-items:center; margin-bottom:18px; flex-wrap:wrap;">
     <select id="kb-filter-phase" onchange="kb_render()" style="font-family:inherit; font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text); cursor:pointer;">
-      <option value="">Todas las fases</option>
-      <option value="1">Fase 1 — Planificación</option>
+      <option value="">Fases 2 y 3</option>
       <option value="2">Fase 2 — Subsistemas</option>
       <option value="3">Fase 3 — Integración</option>
-      <option value="4">Fase 4 — Cierre</option>
     </select>
     <select id="kb-filter-owner" onchange="kb_render()" style="font-family:inherit; font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text); cursor:pointer;">
-      <option value="">Todos los owners</option>
+      <option value="">Todos los integrantes</option>
       <option value="Bugs">Bugs Bunny</option>
       <option value="Judy">Judy Hopps</option>
       <option value="Belen">Belen Hornus</option>
@@ -1186,12 +1184,10 @@
     <div id="kb-stats" style="margin-left:auto; font-family:'DM Mono',monospace; font-size:11px; color:var(--text-muted);"></div>
   </div>
   <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; font-family:'DM Mono',monospace; font-size:10px;">
-    <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#3B6FA0;margin-right:4px;vertical-align:middle"></span>F1 Planificación</span>
     <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#d4a017;margin-right:4px;vertical-align:middle"></span>F2.1 Receptáculo</span>
     <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#b5451b;margin-right:4px;vertical-align:middle"></span>F2.2 Soporte Vital</span>
     <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#7b3f00;margin-right:4px;vertical-align:middle"></span>F2.3 Electrónica</span>
     <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#1d4e89;margin-right:4px;vertical-align:middle"></span>F3 Integración</span>
-    <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#2d6a4f;margin-right:4px;vertical-align:middle"></span>F4 Cierre</span>
     <span style="margin-left:8px;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#b5451b;margin-right:4px;vertical-align:middle"></span>Gate</span>
   </div>
   <div id="kb-board" style="display:flex; gap:12px; overflow-x:auto; padding-bottom:16px; align-items:flex-start;"></div>
@@ -1201,7 +1197,6 @@
     <div id="sec-gates" class="section">
       <div class="section-heading">Stage-Gates</div>
       <div class="section-desc">Los gates no interrumpen el flujo Kanban global; funcionan como criterios de Definition of Done formalizados para tareas críticas.</div>
-      <div class="info-box info-orange"><strong>Stage-Gate 1 — Habilitación de la Ejecución</strong> (al finalizar Fase 1):<br>Plan de gestión aprobado por el Sponsor · Presupuesto autorizado · Aprobaciones regulatorias y bioéticas obtenidas · Arquitectura funcional validada.</div>
       <div class="gate-item"><div class="gate-badge" style="background:var(--accent)">S1</div><div><div class="gate-title">Gate S1 — Receptáculo Bioimpreso</div><div class="gate-criteria">Supera prueba de estanqueidad a presión nominal sin deformación estructural. <em>Habilita inicio de subfase 2.2.</em></div></div></div>
       <div class="gate-item"><div class="gate-badge" style="background:var(--accent3)">S2</div><div><div class="gate-title">Gate S2 — Circuito de Bombeo</div><div class="gate-criteria">Circulación continua de fluido simulado durante 24 horas sin pérdidas ni variaciones de presión superiores al 5%.</div></div></div>
       <div class="gate-item"><div class="gate-badge" style="background:#7b3f00">S3</div><div><div class="gate-title">Gate S3 — Módulo de Oxigenación/Hematosis</div><div class="gate-criteria">Transferencia gaseosa verificada dentro de rangos fisiológicos objetivo (O₂ in / CO₂ out según parámetros de lagomorfos).</div></div></div>
@@ -2165,45 +2160,25 @@ function buildRaci() {
 // KANBAN BOARD
 const KB_COLS = [
   {id:'backlog',title:'Backlog',wip:null},
-  {id:'ready',title:'Ready (DoR \u2713)',wip:null},
-  {id:'inprogress',title:'En Progreso',wip:2},
-  {id:'review',title:'Revisi\u00f3n / Gate',wip:2},
+  {id:'review',title:'To Do',wip:2},
+  {id:'ready',title:'Ready (Done)',wip:null},
+  {id:'inprogress',title:'Doing (En Progreso)',wip:2},
   {id:'done',title:'Documentado \u2713',wip:null},
 ];
-const KB_COLORS = {'1':'#3B6FA0','2.1':'#d4a017','2.2':'#b5451b','2.3':'#7b3f00','3':'#1d4e89','4':'#2d6a4f'};
+const KB_COLORS = {'2.1':'#d4a017','2.2':'#b5451b','2.3':'#7b3f00','3':'#1d4e89'};
 function kb_color(id) {
-  if(id.startsWith('1.')) return KB_COLORS['1'];
   if(id.startsWith('2.1')) return KB_COLORS['2.1'];
   if(id.startsWith('2.2')) return KB_COLORS['2.2'];
   if(id.startsWith('2.3')) return KB_COLORS['2.3'];
   if(id.startsWith('3.')) return KB_COLORS['3'];
-  if(id.startsWith('4.')) return KB_COLORS['4'];
   return '#999';
 }
 function kb_phase(id) {
-  if(id.startsWith('1.')) return '1';
   if(id.startsWith('2.')) return '2';
   if(id.startsWith('3.')) return '3';
-  if(id.startsWith('4.')) return '4';
   return '';
 }
 const KB_CARDS_DEFAULT = [
-  {id:'1.1.1',name:'Redactar Acta de Constituci\u00f3n',owner:'Bugs',hours:9.9,gate:null,col:'backlog'},
-  {id:'1.1.2',name:'Plan de Gesti\u00f3n del Proyecto',owner:'Bugs',hours:34.0,gate:null,col:'backlog'},
-  {id:'1.1.3',name:'Identificar Stakeholders',owner:'Bugs',hours:10.9,gate:null,col:'backlog'},
-  {id:'1.1.4',name:'Registro de Riesgos Inicial',owner:'Bugs',hours:15.3,gate:null,col:'backlog'},
-  {id:'1.1.5',name:'Diagramar Presupuesto',owner:'Najin',hours:19.9,gate:null,col:'backlog'},
-  {id:'1.1.6',name:'Gestionar Contratos con Proveedores',owner:'Najin',hours:39.8,gate:null,col:'backlog'},
-  {id:'1.1.7',name:'Reuni\u00f3n de Kick Off',owner:'Bugs',hours:5.0,gate:null,col:'backlog'},
-  {id:'1.2.1',name:'Documentaci\u00f3n para Comit\u00e9 de \u00c9tica',owner:'Roger',hours:43.6,gate:null,col:'backlog'},
-  {id:'1.2.2',name:'Analizar implicancias y restricciones',owner:'Roger',hours:28.4,gate:null,col:'backlog'},
-  {id:'1.2.3',name:'Revisar documentaci\u00f3n institucional',owner:'Sheila',hours:25.4,gate:null,col:'backlog'},
-  {id:'1.2.4',name:'Enviar documentaci\u00f3n al organismo',owner:'Bugs',hours:5.6,gate:null,col:'backlog'},
-  {id:'1.2.5',name:'\u2b21 HITO: Aprobaci\u00f3n CICUAL',owner:'\u2014',hours:0,gate:'CICUAL',col:'backlog'},
-  {id:'1.3.1',name:'Par\u00e1metros fisiol\u00f3gicos de referencia',owner:'Roger',hours:37.6,gate:null,col:'backlog'},
-  {id:'1.3.2',name:'Elaborar Matriz de Escalabilidad',owner:'Belen',hours:20.6,gate:null,col:'backlog'},
-  {id:'1.3.3',name:'Dise\u00f1ar Arquitectura Funcional del Sistema',owner:'Belen',hours:43.1,gate:null,col:'backlog'},
-  {id:'1.3.4',name:'Elaborar Diagramas de Flujo (P&ID)',owner:'Fatu',hours:24.7,gate:null,col:'backlog'},
   {id:'2.1.1',name:'Comprar materiales tercerizados',owner:'Najin',hours:20.0,gate:null,col:'backlog'},
   {id:'2.1.2',name:'Modelar CAD del habit\u00e1culo uterino',owner:'Fatu',hours:58.7,gate:null,col:'backlog'},
   {id:'2.1.3',name:'Bioimprimir receptáculo (hidrogeles)',owner:'Conejo',hours:92.2,gate:null,col:'backlog'},
@@ -2224,12 +2199,6 @@ const KB_CARDS_DEFAULT = [
   {id:'3.2.3',name:'Simulaci\u00f3n Circulaci\u00f3n Continua 24hs',owner:'Snow',hours:43.0,gate:'S6',col:'backlog'},
   {id:'3.2.4',name:'Informe Final de Resultados',owner:'Snow',hours:40.7,gate:null,col:'backlog'},
   {id:'3.2.5',name:'Gestionar Validaci\u00f3n Externa (QA)',owner:'Bugs',hours:8.4,gate:null,col:'backlog'},
-  {id:'4.1.1',name:'Actualizar Planos Finales As-Built',owner:'Fatu',hours:23.8,gate:null,col:'backlog'},
-  {id:'4.1.2',name:'Elaborar Fichas T\u00e9cnicas',owner:'Conejo',hours:22.3,gate:null,col:'backlog'},
-  {id:'4.1.3',name:'Consolidar Log de Decisiones',owner:'Bugs',hours:13.6,gate:null,col:'backlog'},
-  {id:'4.1.4',name:'Redactar Manual de Usuario',owner:'Judy',hours:35.9,gate:null,col:'backlog'},
-  {id:'4.2.1',name:'Reuni\u00f3n de Cierre',owner:'Bugs',hours:5.4,gate:null,col:'backlog'},
-  {id:'4.2.2',name:'Presentaci\u00f3n Final a Instituci\u00f3n Conservaci\u00f3n',owner:'Bugs',hours:18.7,gate:null,col:'backlog'},
 ];
 
 let kb_state = [];
