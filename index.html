@@ -2205,23 +2205,28 @@ let kb_drag_id = null;
 
 function kb_load() {
   try {
-    const saved = localStorage.getItem('bionest_kanban_v2');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      kb_state = KB_CARDS_DEFAULT.map(def => {
+    const saved2 = localStorage.getItem('bionest_kanban_fase2');
+    const saved3 = localStorage.getItem('bionest_kanban_fase3');
+    kb_state = KB_CARDS_DEFAULT.map(def => {
+      const phase = kb_phase(def.id);
+      const saved = phase === '2' ? saved2 : saved3;
+      if (saved) {
+        const parsed = JSON.parse(saved);
         const s = parsed.find(p => p.id === def.id);
         return s ? {...def, col: s.col} : {...def};
-      });
-    } else {
-      kb_state = KB_CARDS_DEFAULT.map(c => ({...c}));
-    }
+      }
+      return {...def};
+    });
   } catch(e) {
     kb_state = KB_CARDS_DEFAULT.map(c => ({...c}));
   }
 }
 
 function kb_save() {
-  localStorage.setItem('bionest_kanban_v2', JSON.stringify(kb_state.map(c => ({id:c.id,col:c.col}))));
+  const cards2 = kb_state.filter(c => kb_phase(c.id) === '2');
+  const cards3 = kb_state.filter(c => kb_phase(c.id) === '3');
+  localStorage.setItem('bionest_kanban_fase2', JSON.stringify(cards2.map(c => ({id:c.id,col:c.col}))));
+  localStorage.setItem('bionest_kanban_fase3', JSON.stringify(cards3.map(c => ({id:c.id,col:c.col}))));
 }
 
 function kb_reset() {
@@ -2257,7 +2262,8 @@ function kb_render() {
   const filtered = kb_get_filtered();
   board.innerHTML = '';
   KB_COLS.forEach(col => {
-    const cards = kb_state.filter(c => c.col === col.id);
+    const activePhase = document.getElementById('kb-filter-phase')?.value || '';
+    const cards = kb_state.filter(c => c.col === col.id && (activePhase === '' || kb_phase(c.id) === activePhase));
     const visCards = filtered.filter(c => c.col === col.id);
     const activePhase = document.getElementById('kb-filter-phase')?.value || '';
     const effectiveWip = (col.id === 'inprogress' && activePhase === '3') ? 1 : col.wip;
