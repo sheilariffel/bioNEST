@@ -1952,15 +1952,15 @@ function showSection(id) {
     roadmap: 'Roadmap',
     pert: 'Estimaciones PERT',
     kanban: 'Kanban & WIP Limits',
-    'kanban-board': 'Tablero Kanban ',
+    'kanban-board': 'Tablero Kanban',
     gates: 'Stage-Gates',
     raci: 'Matriz RACI',
-    metrics: 'M\u00e9tricas Kanban',
+    metrics: 'Métricas Kanban',
       risks: 'Registro de Riesgos',
       'plan-respuesta': 'Plan de Respuesta',
       evolucion: 'Evolución',
       matrizpxi: 'Matriz P×I',
-    bibliography: 'Bibliograf\u00eda & Contexto'
+    bibliography: 'Bibliografía & Contexto'
   };
   const titleEl = document.getElementById('topbar-title');
   if (titleEl) titleEl.textContent = titles[id] || id;
@@ -2265,7 +2265,6 @@ function kb_render() {
     const activePhase = document.getElementById('kb-filter-phase')?.value || '';
     const cards = kb_state.filter(c => c.col === col.id && (activePhase === '' || kb_phase(c.id) === activePhase));
     const visCards = filtered.filter(c => c.col === col.id);
-    const activePhase = document.getElementById('kb-filter-phase')?.value || '';
     const effectiveWip = (col.id === 'inprogress' && activePhase === '3') ? 1 : col.wip;
     const over = effectiveWip && cards.length > effectiveWip;
     const colEl = document.createElement('div');
@@ -2315,6 +2314,7 @@ buildPert();
 buildRaci();
 kb_load();
 document.addEventListener('DOMContentLoaded', function() {
+  showSection('overview');
   if (document.getElementById('kb-board')) kb_render();
   const toggleButton = document.getElementById('toggleSidebar');
   if (toggleButton) {
