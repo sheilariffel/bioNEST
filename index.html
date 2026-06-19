@@ -321,6 +321,26 @@
     margin-bottom: 24px;
   }
 
+  /* COMM TABS */
+  .comm-tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); margin-bottom: 20px; flex-wrap: wrap; }
+  .comm-tab-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .comm-tab-btn:hover { color: var(--text); }
+  .comm-tab-btn.active { color: var(--accent3); border-bottom-color: var(--accent3); }
+  .comm-tab-panel { display: none; }
+  .comm-tab-panel.active { display: block; }
+
   /* RISK MATRIX */
   .risk-item {
     display: flex;
@@ -626,6 +646,9 @@
     </div>
     <div class="nav-item" onclick="showSection('team')">
       <span class="nav-icon">⬡</span> Equipo
+      <div class="nav-item" onclick="showSection('comunicaciones')">
+      <span class="nav-icon">✉</span> Plan de Comunicaciones
+    </div>
     </div>
   </div>
 
@@ -2053,6 +2076,212 @@
       </div>
     </div>
 
+    <div id="sec-comunicaciones" class="section">
+      <div class="section-heading">Plan de Comunicaciones</div>
+      <div class="section-desc">TP 5 · Identificación de interesados, plan de gestión de las comunicaciones y plantillas de informes.</div>
+
+      <div class="comm-tabs">
+        <button class="comm-tab-btn active" onclick="showCommTab('a')">Parte A — Interesados</button>
+        <button class="comm-tab-btn" onclick="showCommTab('b')">Parte B — Plan de Comunicaciones</button>
+        <button class="comm-tab-btn" onclick="showCommTab('c')">Parte C — Plantillas</button>
+      </div>
+
+      <!-- PARTE A -->
+      <div id="comm-tab-a" class="comm-tab-panel active">
+        <div class="info-box info-blue" style="margin-bottom:16px">Escala — Influencia e Interés: <strong>A</strong> = Alta · <strong>M</strong> = Media · <strong>B</strong> = Baja</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Interesado</th><th>Rol en el proyecto</th><th>Influencia</th><th>Interés</th><th>¿Qué necesita saber?</th><th>Observaciones / Estrategia</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Sudán</strong> (NestBiotech)</td><td>Sponsor / Patrocinador</td><td><span class="tag tag-red">A</span></td><td><span class="tag tag-red">A</span></td><td>Aprobaciones presupuestarias, avance en hitos Stage-Gate.</td><td>Involucrar en cada Stage-Gate formal. Comunicar variaciones presupuestarias de inmediato.</td></tr>
+              <tr><td>Institución de Conservación</td><td>Cliente / Usuario Final</td><td><span class="tag tag-orange">M</span></td><td><span class="tag tag-red">A</span></td><td>Funcionalidad del sistema, cumplimiento de requisitos de conservación, resultados de pruebas.</td><td>Anticipar con tiempo cualquier cambio de alcance que impacte la entrega. Comunicación a través del PM.</td></tr>
+              <tr><td>Bugs Bunny</td><td>Director del Proyecto (PM)</td><td><span class="tag tag-red">A</span></td><td><span class="tag tag-red">A</span></td><td>Todos los detalles del proyecto: cronograma, presupuesto, riesgos, cambios de alcance, calidad, estado de Stage-Gates.</td><td>Es el receptor y emisor central de todas las comunicaciones del proyecto. Toma decisiones de escalamiento ante desvíos o bloqueos críticos.</td></tr>
+              <tr><td>Judy Hopps</td><td>Jefe de Ingeniería</td><td><span class="tag tag-red">A</span></td><td><span class="tag tag-red">A</span></td><td>Estado de subsistemas técnicos, bloqueos de integración, decisiones de diseño, criterios de aceptación de Stage-Gates.</td><td>Involucrar en revisiones técnicas semanales. Es la única aprobadora (A) de entregables de ingeniería en las Fases 2 y 3.</td></tr>
+              <tr><td>Equipo Técnico (Belén, Mateo, Sr. Conejo, Roger, Snowball, Lola, Fatu)</td><td>Equipo de Ejecución</td><td><span class="tag tag-orange">M</span></td><td><span class="tag tag-red">A</span></td><td>Tareas asignadas, prioridades del tablero Kanban, WIP activo, bloqueos, fechas de Stage-Gate, decisiones técnicas que los afectan.</td><td>Sincronizaciones semanales. El tablero Kanban es la herramienta principal de visibilidad. Comunicación directa sobre bloqueos a Judy Hopps.</td></tr>
+              <tr><td><strong>Sheila Riffel</strong></td><td>Gestora de Calidad</td><td><span class="tag tag-orange">M</span></td><td><span class="tag tag-red">A</span></td><td>Criterios de aceptación vigentes, resultados de auditorías internas, estado de cumplimiento normativo (IRAM/IEC), desviaciones detectadas.</td><td>Involucrar en todas las revisiones previas a Stage-Gates. Reportar anomalías en tiempo real al PM. Coordinación estrecha con el Organismo Regulador.</td></tr>
+              <tr><td>Najin</td><td>Contador / Control Financiero (50% dedicación)</td><td><span class="tag tag-orange">M</span></td><td><span class="tag tag-orange">M</span></td><td>Estado presupuestario, contratos con proveedores, costos acumulados, desvíos económicos.</td><td>Reunión financiera mensual con el PM. Alertar ante desvíos superiores al 10% del presupuesto planificado.</td></tr>
+              <tr><td>Peter Rabbit</td><td>Lic. en Marketing (25% dedicación)</td><td><span class="tag tag-gray">B</span></td><td><span class="tag tag-orange">M</span></td><td>Hitos relevantes para comunicación institucional, cronograma de presentaciones al cliente.</td><td>Comunicar con anticipación los hitos de presentación al cliente. Coordinación con PM para materiales.</td></tr>
+              <tr><td>Nymeria Stark / CICUAL / IRAM-IEC</td><td>Organismo Regulador / Comité de Bioética</td><td><span class="tag tag-red">A</span></td><td><span class="tag tag-orange">M</span></td><td>Documentación técnica y bioética completa, protocolo experimental, evidencia de cumplimiento normativo IRAM/IEC.</td><td>Comunicación formal y documentación exhaustiva. SG1 está bloqueado hasta su aprobación.</td></tr>
+              <tr><td>Proveedores de Biomateriales y Componentes</td><td>Proveedor Externo</td><td><span class="tag tag-orange">M</span></td><td><span class="tag tag-orange">M</span></td><td>Especificaciones técnicas de insumos (hidrogeles, componentes electrónicos), plazos de entrega, condiciones comerciales.</td><td>Coordinar con Najin y el equipo técnico responsable. Documentar especificaciones formalmente para trazabilidad. Gestionar riesgo de demora (R-005 en registro).</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PARTE B -->
+      <div id="comm-tab-b" class="comm-tab-panel">
+        <div class="info-box info-green" style="margin-bottom:16px">El plan cubre todas las comunicaciones formales del proyecto, incluyendo al menos una por cada interesado identificado en la Parte A.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Información</th><th>Contenido</th><th>Formato</th><th>Nivel de Detalle</th><th>Responsable</th><th>Grupo Receptor</th><th>Canal</th><th>Metodología / Herramienta</th><th>Frecuencia</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Informe de Avance Mensual</strong></td><td>Estado del proyecto, tareas completadas vs. planificadas, desvíos de cronograma y presupuesto, acciones correctivas, próximas actividades, indicadores de desempeño.</td><td>Word / PDF (Plantilla C.1)</td><td><span class="tag tag-red">Alto</span></td><td>Bugs Bunny (PM)</td><td>Sponsor (Sudán), Jefe de Ingeniería (Judy)</td><td>Email</td><td>Plantilla de Informe de Avance (ver Parte C.1)</td><td>Mensual (último día hábil del mes)</td></tr>
+              <tr><td><strong>Reporte de Estado al Cliente</strong></td><td>Avance general del proyecto, hitos alcanzados en el período, progreso hacia entregables clave, próximos pasos.</td><td>Presentación (PDF / PPT)</td><td><span class="tag tag-orange">Medio</span></td><td>Bugs Bunny (PM) + Peter Rabbit</td><td>Institución de Conservación (Cliente)</td><td>Reunión virtual</td><td>Google Meet + documento síntesis adjunto</td><td>Por hito (post-Stage-Gate relevante)</td></tr>
+              <tr><td><strong>Acta de Stage-Gate</strong></td><td>Criterios de aceptación evaluados, decisión Go / No-Go, compromisos para la siguiente fase, firmas de responsables.</td><td>Word (acta formal)</td><td><span class="tag tag-red">Alto</span></td><td>Bugs Bunny (PM) + Sheila Riffel</td><td>Sudán (Sponsor), Judy Hopps</td><td>Reunión presencial + Email</td><td>Plantilla de Acta de Stage-Gate</td><td>Cuando ocurra (por Stage-Gate)</td></tr>
+              <tr><td><strong>Sincronización de Equipo (Kanban Review)</strong></td><td>Estado del tablero Kanban, WIP activo, bloqueos identificados, reasignaciones, avance de cards por subsistema.</td><td>Oral / Registro en tablero</td><td><span class="tag tag-gray">Bajo</span></td><td>Bugs Bunny (PM) / Judy Hopps</td><td>Equipo Técnico completo (12 integrantes internos)</td><td>Reunión presencial</td><td>Tablero Kanban</td><td>Semanal (primer día hábil de la semana)</td></tr>
+              <tr><td><strong>Solicitud de Cambio / Alerta de Desvío</strong></td><td>Descripción del desvío o cambio identificado, impacto estimado en cronograma y/o costo, acción correctiva propuesta.</td><td>Email + formulario de cambio</td><td><span class="tag tag-red">Alto</span></td><td>Sheila Riffel (Calidad)</td><td>PM + Jefe de Ingeniería</td><td>Email urgente</td><td>Formulario de Solicitud de Cambio</td><td>Cuando ocurra (inmediato)</td></tr>
+              <tr><td><strong>Documentación a Organismo Regulador</strong> (CICUAL / IRAM-IEC)</td><td>Expediente bioético, protocolo experimental, evidencia de cumplimiento normativo.</td><td>PDF (expediente formal)</td><td><span class="tag tag-red">Alto</span></td><td>Sheila Riffel + Roger Rabbit + Bugs Bunny</td><td>Nymeria Stark / CICUAL / IRAM-IEC</td><td>Reunión presencial formal + Email</td><td>Expediente digital + copia física institucional</td><td>Puntual (subtarea 1.2.4)</td></tr>
+              <tr><td><strong>Reporte Financiero Mensual</strong></td><td>Costos acumulados por fase, desvíos presupuestarios, estado de contratos con proveedores.</td><td>Ficha / tabla Excel</td><td><span class="tag tag-orange">Medio</span></td><td>Najin (Contador)</td><td>Bugs Bunny (PM) + Sudán (Sponsor)</td><td>Email</td><td>Planilla de control de costos (Excel)</td><td>Mensual (junto al Informe de Avance)</td></tr>
+              <tr><td><strong>Reporte de Calidad / Auditoría Interna</strong></td><td>Resultados de auditorías de calidad, hallazgos y no conformidades, acciones correctivas, verificación de criterios de Gate.</td><td>Word / PDF</td><td><span class="tag tag-red">Alto</span></td><td>Sheila Riffel (Gestora de Calidad)</td><td>PM + Jefe de Ingeniería + Equipo Técnico</td><td>Email + Reunión de revisión</td><td>Plantilla de Reporte de Calidad</td><td>Por Stage-Gate (pre y post-Gate)</td></tr>
+              <tr><td><strong>Comunicación de Marketing / Institucional</strong></td><td>Materiales de difusión del proyecto, presentaciones institucionales para el cliente.</td><td>PPT / PDF institucional</td><td><span class="tag tag-orange">Medio</span></td><td>Peter Rabbit (Marketing)</td><td>Institución de Conservación + Sudán (Sponsor)</td><td>Reunión presencial / Email</td><td>Canva / PowerPoint</td><td>Por hito (presentaciones clave: SG1, SG-S6, cierre)</td></tr>
+              <tr><td><strong>Comunicación a Proveedores</strong></td><td>Especificaciones técnicas actualizadas de insumos, cronograma de compras, observaciones técnicas o ajustes de pedido.</td><td>Email formal</td><td><span class="tag tag-orange">Medio</span></td><td>Najin + responsable técnico del insumo</td><td>Proveedores de Biomateriales y Componentes</td><td>Email</td><td>Orden de compra + especificaciones técnicas adjuntas</td><td>Cuando ocurra (por adquisición)</td></tr>
+              <tr><td><strong>Comunicación Interna de Riesgos</strong></td><td>Registro de riesgos actualizado, nuevos riesgos identificados, cambios en el plan de respuesta, estado de riesgos activos.</td><td>Email + reunión breve</td><td><span class="tag tag-orange">Medio</span></td><td>Bugs Bunny (PM)</td><td>Equipo completo + Sudán (si el riesgo es de nivel Alto)</td><td>Email + Reunión</td><td>Plantilla de Registro de Riesgos (Excel E4)</td><td>Mensual / Inmediato si riesgo Alto</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PARTE C -->
+      <div id="comm-tab-c" class="comm-tab-panel">
+
+        <div class="card">
+          <div class="card-title">C.1 — Plantilla: Informe de Avance Mensual</div>
+          <div class="card-subtitle">CORRESPONDE A PARTE B — FILA 1 · DIRIGIDO A INTERESADOS OPERATIVOS Y TÉCNICOS</div>
+          <div class="body-text" style="margin-bottom:14px">Función: mantener al equipo y responsables de seguimiento sincronizados.</div>
+
+          <div class="table-wrap" style="margin-bottom:16px">
+            <table>
+              <tbody>
+                <tr><td><strong>Nombre del proyecto</strong></td><td>BioNest — Sistema de Ectogénesis Artificial para Conservación de Especies</td></tr>
+                <tr><td><strong>Período cubierto</strong></td><td>3 agosto 2026 — 31 agosto 2026 (Mes 1)</td></tr>
+                <tr><td><strong>Fecha de emisión</strong></td><td>31/08/2026</td></tr>
+                <tr><td><strong>Responsable</strong></td><td>Bugs Bunny — Director del Proyecto (PM)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small-label">Estado General del Proyecto</div>
+          <div class="info-box info-orange" style="margin:8px 0 16px">
+            <strong>[AMARILLO]</strong> La Fase 1.1 avanza según lo planificado, pero la dedicación parcial de Najin (50%) generó un retraso de 2 días en la revisión del presupuesto inicial. Riesgo moderado sobre el Gate de habilitación de Fase 1.
+          </div>
+
+          <div class="small-label">Avance del Período</div>
+          <div class="table-wrap" style="margin:8px 0 16px">
+            <table>
+              <tbody>
+                <tr><td><strong>Tareas completadas</strong></td><td>1.1.1 Redactar acta de constitución / 1.1.2 Elaborar plan de gestión / 1.1.3 Identificar y registrar stakeholders y estrategia / 1.1.4 Elaborar registro de riesgos inicial / 1.1.5 Diagramar presupuesto</td></tr>
+                <tr><td><strong>Tareas planificadas</strong></td><td>1.1.1 / 1.1.2 / 1.1.3 / 1.1.4 / 1.1.5 / 1.1.6 / 1.1.7 (Revisión financiera inicial)</td></tr>
+                <tr><td><strong>Tareas no completadas</strong></td><td>1.1.5 / 1.1.6 / 1.1.7</td></tr>
+                <tr><td><strong>% Avance global del mes</strong></td><td>60% (4 de 7 tareas planificadas completadas)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small-label">Problemas y Desvíos Detectados</div>
+          <div class="table-wrap" style="margin:8px 0 16px">
+            <table>
+              <tbody>
+                <tr><td><strong>Desvío de cronograma</strong></td><td>+2 días hábiles en subtarea 1.1.5 por indisponibilidad parcial de Najin (Contador, 50% dedicación).</td></tr>
+                <tr><td><strong>Desvío presupuestario</strong></td><td>Sin desvío detectado. Gasto acumulado: $0 (fase preparatoria sin compras aún).</td></tr>
+                <tr><td><strong>Riesgos activados</strong></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small-label">Acciones Tomadas o en Curso</div>
+          <div class="table-wrap" style="margin:8px 0 16px">
+            <table>
+              <tbody>
+                <tr><td><strong>Acción correctiva</strong></td><td>Reprogramación de reunión de revisión financiera para el 02/09/2026. Notificación enviada a Bugs Bunny y Sudán.</td></tr>
+                <tr><td><strong>Acción preventiva</strong></td><td>Se incorporó buffer de 3 días hábiles en el cronograma ajustado para la semana 2 de septiembre.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small-label">Próximas Actividades (Septiembre 2026)</div>
+          <div class="table-wrap" style="margin:8px 0 16px">
+            <table>
+              <tbody>
+                <tr><td><strong>Actividades previstas</strong></td><td>1.1.6 Gestionar contratos con proveedores para biomateriales, componentes electrónicos e insumos tercerizados / 1.1.7 Realizar reunión de Kick Off / 1.2.1 Inicio elaboración expediente bioético (CICUAL)</td></tr>
+                <tr><td><strong>Hito previsto</strong></td><td>Kick-Off Meeting (aprox. semana del 14/09/2026)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small-label">Indicadores de Desempeño</div>
+          <div class="table-wrap" style="margin:8px 0 16px">
+            <table>
+              <tbody>
+                <tr><td><strong>% Tareas completadas / planificadas</strong></td><td>60% (4/7)</td></tr>
+                <tr><td><strong>SPI (estimado)</strong></td><td>0,60 — leve retraso en la última semana del mes</td></tr>
+                <tr><td><strong>Desvío sobre cronograma base</strong></td><td>+2 días hábiles (absorbible dentro del buffer de la subfase)</td></tr>
+                <tr><td><strong>Riesgos activos</strong></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="info-box info-blue"><strong>Nota de uso:</strong> Esta plantilla debe completarse el último día hábil de cada mes por el Director del Proyecto (Bugs Bunny) y distribuirse por email a Sudán (Sponsor) y a Judy Hopps (Jefe de Ingeniería). El semáforo debe actualizarse con justificación breve. Todos los campos son obligatorios.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">C.2 — Planilla: Sincronización de Equipo (Kanban Review)</div>
+          <div class="card-subtitle">CORRESPONDE A PARTE B — FILA 4 · FRECUENCIA SEMANAL (PRIMER DÍA HÁBIL DE LA SEMANA)</div>
+
+          <div class="table-wrap" style="margin:14px 0 16px">
+            <table>
+              <tbody>
+                <tr><td><strong>Nombre del proyecto</strong></td><td>BioNest — Sistema de Ectogénesis Artificial para Conservación de Especies</td></tr>
+                <tr><td><strong>Período</strong></td><td>02/12/2026 — 23/12/2026</td></tr>
+                <tr><td><strong>Fecha de reunión</strong></td><td>7/12/2026 (lunes — primer día hábil)</td></tr>
+                <tr><td><strong>Conducida por</strong></td><td>Bugs Bunny (PM) / Judy Hopps (Jefe de Ingeniería)</td></tr>
+                <tr><td><strong>Ausencias</strong></td><td>Sin ausencias registradas</td></tr>
+                <tr><td><strong>Subfase activa (Kanban)</strong></td><td>Subfase 2.1 — Desarrollo de Subsistemas</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small-label">1. Estado General del Tablero Kanban</div>
+          <div class="table-wrap" style="margin:8px 0 6px">
+            <table>
+              <thead><tr><th>Columna</th><th>N° Cards</th><th>Variación</th><th>IDs activas / novedades destacadas</th></tr></thead>
+              <tbody>
+                <tr><td>Pendiente (Backlog)</td><td>1</td><td>+1</td><td>2.1.4</td></tr>
+                <tr><td>En Curso (WIP)</td><td>2</td><td>+2</td><td>2.1.2 &amp; 2.1.3</td></tr>
+                <tr><td>Bloqueado</td><td>1</td><td>+1</td><td>2.1.4 bloqueada</td></tr>
+                <tr><td>Terminado (esta semana)</td><td>1</td><td>+1</td><td>2.1.1 finalizada</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="kpi-sub" style="margin-bottom:16px">Variación respecto a la semana anterior: "+" más cards · "–" menos cards · "=" sin cambio</div>
+
+          <div class="small-label">2. WIP Activo — Cards en Curso (Detalle)</div>
+          <div class="table-wrap" style="margin:8px 0 16px">
+            <table>
+              <thead><tr><th>ID</th><th>Descripción</th><th>Subsistema</th><th>Responsable</th><th>Observación</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">2.1.2</td><td>Diseñar modelo CAD del habitáculo</td><td>Cámara de Gestación</td><td>Fatu</td><td>Avanza según plan. Entrega prevista viernes.</td></tr>
+                <tr><td class="mono">2.1.3</td><td>Bioimprimir receptáculo con hidrogeles</td><td>Fluido Amniótico Sint.</td><td>Sr. Conejo</td><td>En proceso.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small-label">3. Reasignaciones</div>
+          <div class="table-wrap" style="margin:8px 0 16px">
+            <table>
+              <thead><tr><th>ID</th><th>Descripción de la card</th><th>Asignado anteriormente</th><th>Nuevo responsable</th><th>Motivo</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">2.1.4</td><td>Ensayo de biocompatibilidad del hidrogel</td><td>Roger Rabbit</td><td>Belén Hornus</td><td>Roger está enfermo</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small-label">4. Próxima Reunión</div>
+          <div class="table-wrap" style="margin:8px 0 16px">
+            <table>
+              <tbody>
+                <tr><td><strong>Fecha estimada</strong></td><td>14/12/26 (lunes — primer día hábil de la semana siguiente)</td></tr>
+                <tr><td><strong>Temas pendientes / a revisar</strong></td><td>Estado general del tablero, monitoreo del riesgo R2</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="info-box info-blue"><strong>Nota de uso:</strong> Esta planilla debe completarse durante o inmediatamente después de la reunión, el primer día hábil de cada semana, por el Director del Proyecto (Bugs Bunny) o el Jefe de Ingeniería (Judy Hopps). Nivel de detalle: Bajo. Los campos en gris claro son de completado obligatorio. Archivar como registro interno del equipo. No requiere distribución por email salvo que existan bloqueos de nivel Alto o decisiones que impacten el cronograma (escalar al PM de inmediato).</div>
+        </div>
+
+      </div>
+
+    </div>
+
   </div><!-- /content -->
 </div><!-- /main -->
 
@@ -2108,11 +2337,21 @@ function showSection(id) {
       'plan-respuesta': 'Plan de Respuesta',
       evolucion: 'Evolución',
       matrizpxi: 'Matriz P×I',
-    bibliography: 'Bibliografía & Contexto'
+    bibliography: 'Bibliografía & Contexto',
+    comunicaciones: 'Plan de Comunicaciones'
   };
   const titleEl = document.getElementById('topbar-title');
   if (titleEl) titleEl.textContent = titles[id] || id;
   if (id === 'kanban-board') { kb_load(); kb_render(); }
+}
+
+function showCommTab(letter) {
+  document.querySelectorAll('.comm-tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.comm-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('comm-tab-' + letter).classList.add('active');
+  document.querySelectorAll('.comm-tab-btn').forEach(b => {
+    if (b.getAttribute('onclick') === "showCommTab('" + letter + "')") b.classList.add('active');
+  });
 }
 
 function toggleWbs(id) {
